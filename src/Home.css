@@ -1,0 +1,34 @@
+#titleDesign::before{
+    content:'';
+    width: 1px;
+    height: 100%;
+    border: 2px solid var(--grey);
+    background-color: var(--grey);
+    position: absolute;
+    left: 0;
+}
+
+.btn, .btn:hover{
+    background-color: var(--grey);
+    border-color: var(--olive-dark);
+    color: var(--olive-dark);
+}
+
+input[type="file"]::-webkit-file-upload-button {
+    background-color: white;
+    border-color: white;
+}
+
+.bg-image{
+    background-image: url("https://efeozbatur.com/wp-content/uploads/2022/10/The-first-demonstration-of-the-pilot-ACE-at-NPL-December-1950.-10303413-1024x684.jpg");
+    background-size: cover;
+}
+
+#upload-icon {
+    width: 55px;
+    height: 55px;
+    border: 2px solid var(--olive);
+    color: var(--olive);
+    top: -10px;
+    left: -10px;
+}

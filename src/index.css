@@ -1,0 +1,18 @@
+:root {
+  --text: #7B435B;
+  --background:#08090A;
+  --text_2: #B7b5e4;
+  --green: #C0caad;
+  --orange: #C97d60;
+  --text_3: #cec075;
+  --olive: #85883f;
+  --olive-dark: #676b2f;
+  --olive-yellow: #c2b709;
+  --grey: #a19a7f;
+}
+
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f8f7f2;
+}
+

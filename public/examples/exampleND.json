@@ -1,0 +1,80 @@
+{
+    "machine":{
+        "alphabet": ["0", "1"],
+        "set_of_states": ["q_0", "q_1", "q_2", "q_3", "q_4", "q_5"],
+        "initial_state": "q_0",
+        "final_states": ["q_5"]
+    },
+    "transitions": [
+        {
+            "current_state": "q_0",
+            "read": "1",
+            "write": "1",
+            "direction": "R",
+            "next_state": "q_1"
+        },
+        {
+            "current_state": "q_0",
+            "read": "0",
+            "write": "0",
+            "direction": "R",
+            "next_state": "q_3"
+        },
+        {
+            "current_state": "q_1",
+            "read": "1",
+            "write": "1",
+            "direction": "R",
+            "next_state": "q_2"
+        },
+        {
+            "current_state": "q_1",
+            "read": "0",
+            "write": "0",
+            "direction": "R",
+            "next_state": "q_4"
+        },
+        {
+            "current_state": "q_2",
+            "read": "0",
+            "write": "0",
+            "direction": "R",
+            "next_state": "q_2"
+        },
+        {
+            "current_state": "q_2",
+            "read": "1",
+            "write": "1",
+            "direction": "R",
+            "next_state": "q_2"
+        },
+        {
+            "current_state": "q_3",
+            "read": "1",
+            "write": "1",
+            "direction": "R",
+            "next_state": "q_4"
+        },
+        {
+            "current_state": "q_3",
+            "read": "0",
+            "write": "0",
+            "direction": "R",
+            "next_state": "q_5"
+        },
+        {
+            "current_state": "q_4",
+            "read": "0",
+            "write": "0",
+            "direction": "R",
+            "next_state": "q_4"
+        },
+        {
+            "current_state": "q_4",
+            "read": "1",
+            "write": "1",
+            "direction": "R",
+            "next_state": "q_4"
+        }
+    ]
+}
