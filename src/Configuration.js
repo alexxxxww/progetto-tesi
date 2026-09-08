@@ -22,15 +22,26 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
 
     for(let j = 0; j <= end+1; j++){
         dati.transitions.forEach(trans => {
-            if(trans.current_state == curr && trans.direction == 'R' && trans.read == inputArray[i]){
+            if(trans.current_state == curr && trans.read == inputArray[i]){
                 div.innerHTML += ' &#8866; '
-                i++;
+                
+                if(trans.direction == 'R')
+                    i++;
+                else if(trans.direction == 'L')
+                    i--
                 let fakeArray = [...inputArray];
 
                 fakeArray.splice(i, 0, trans.next_state)
                 div.innerHTML += `${fakeArray.join('')}`
+
+                console.log(fakeArray.length)
+                console.log(i)
                 curr = trans.next_state;
+                if(curr == dati.machine.final_states && i == fakeArray.length-1){
+                    div.innerHTML += ' stringa accettata'
+                }
                 
+                //gestire caso direzione L
                 var ReverseString = [];
                 var beforeHead = fakeArray.slice(0, i).join('')
                 for(let n = i-1; n >= 0; n--){
@@ -56,7 +67,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
                     translateString(fakeArray.slice(i+2).join(''), par);
                 
                 par.innerHTML += `, ${statesEnc[curr]})`
-            }//CASO DIREZIONE L
+            }
         });
     }  
 }

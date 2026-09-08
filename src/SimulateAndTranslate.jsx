@@ -1,6 +1,6 @@
 import '@xyflow/react/dist/style.css' //https://reactflow.dev/learn
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, MarkerType } from '@xyflow/react';
-import { useState, useCallback, useEffect, use } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { generateConfigurationsTree } from './Configuration.js';
 import { translator } from "./fileTranslator.js";
@@ -22,12 +22,14 @@ function SimulateAndTranslate(){
     const [activeState, setActiveState] = useState('');
     const [activeRead, setActiveRead] = useState('');
     const [go, setGo] = useState(false);
+    const [cell, setCell] = useState(1)
+    const charToRead = useRef(0)
 
     useEffect(() => {
         if (!dati || !input) return;
 
         setActiveState(dati.machine?.initial_state || '');
-        setActiveRead(input[0] || '');
+        setActiveRead(input[charToRead.current] || '');
 
         translator(dati, input, alphEnc, statesEnc);
         generateConfigurationsTree(dati, input, alphEnc, statesEnc);
@@ -56,24 +58,49 @@ function SimulateAndTranslate(){
     }, [dati, input]);
 
     useEffect(()=>{
-        if(!dati?.transitions || !go ) return;
-        
-        const timer = setTimeout(() => {
-            const trans = dati.transitions.find(
-                (trans) => trans.current_state === activeState && trans.read === activeRead
-            );
+        if(input && cell){
+            generateTape(input);
+            animation(1);
+        }
+    }, [dati])
 
+    useEffect(()=> {
+        animation(cell)
+    }, [cell])
+
+    useEffect(()=>{
+        if(!dati?.transitions || !go ) return;
+
+        const timer = setTimeout(() => { 
+            const trans = dati.transitions.find(
+                (trans) => trans.current_state === activeState && trans.read === activeRead 
+            );
+            if(!trans) return;
+
+            console.log(trans)
+
+            if(trans?.direction == 'R')
+                setCell(prev => prev + 1);
+            else if(trans?.direction == 'L')
+                setCell(prev => prev - 1)
+
+            charToRead.current++;
+            console.log(input[charToRead.current])
             const nextTrans = dati.transitions.find(
-                (nextTrans) => nextTrans.current_state === trans.next_state
+                (nextTrans) => nextTrans.current_state === trans.next_state && 
+                nextTrans.read === input[charToRead.current]
             );
 
             if (nextTrans) {
-                setActiveRead(nextTrans.read);
+                console.log(nextTrans)
+                setActiveRead(input[charToRead.current]);
                 setActiveState(nextTrans.current_state);
             } else {
-                setGo(false)
-                setActiveRead(input[0] || '');
+                charToRead.current = 0;
+                setCell(1)
+                setActiveRead(input[charToRead.current] || '');
                 setActiveState(dati.machine?.initial_state || '');
+                setGo(false)
                 return;
             } 
         }, 4100);
@@ -99,8 +126,8 @@ function SimulateAndTranslate(){
                 source: edge.current_state,
                 target: edge.next_state,
                 label: labels[key].join(';'),
-                type: 'SelfConn', 
-                animated: isActive, 
+                type: 'SelfConn',  
+                animated: isActive,
                 data:{
                     animatedCircle: isActive,
                 },
@@ -118,13 +145,13 @@ function SimulateAndTranslate(){
     return(
         <div>
             <div className='d-flex justify-content-around m-4 vh-25'>
-                <button onClick={()=>setToDo(0)} className="w-25 btn btn-st border-3 d-flex justify-content-center align-items-center fw-bold">Translate in Lambda Calculus</button>
-                <button onClick={()=>setToDo(1)} className='w-25 btn btn-st border-3 d-flex justify-content-center align-items-center fw-bold'>Simulate Turing Machine</button>
+                <button onClick={()=>setToDo(0)} className="w-25 btn-st pt-2 rounded border-3 d-flex justify-content-center align-items-center fw-bold">Translate in Lambda Calculus</button>
+                <button onClick={()=>setToDo(1)} className='w-25 btn-st p-2 rounded border-3 d-flex justify-content-center align-items-center fw-bold'>Simulate Turing Machine</button>
             </div>
             <div className="vh-75 m-2">
                 <div className={toDo == 0 ? 'd-none' : ''}>
                     <div className='vh-10 row'>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#ff0073" className="col bi bi-play-circle" viewBox="0 0 16 16" onClick={()=>{setGo(true)}}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#ff0073" className="col bi bi-play-circle" viewBox="0 0 16 16" onClick={()=>{setGo(true); setCell(2)}}>
                             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                             <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445"/>
                         </svg>

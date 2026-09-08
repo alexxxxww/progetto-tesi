@@ -1,0 +1,7 @@
+[ ] gestire le transizioni con direzione a sinistra
+    note: 
+    - movimento sul nastro già gestito
+    - aggiungere ramo con condizione 'direction == L' in Configurations.js
+[ ] gestire le transizioni con testina ferma [?]
+[ ] gestire le transizioni in cui la cella viene sovrascritta
+[ ] gestire macchine con più nastri [?]
