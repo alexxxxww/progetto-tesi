@@ -3,3 +3,7 @@
     border-color: #637a84;
     color: #637a84;
 }
+
+svg.goButton:active{
+    fill:grey
+}
