@@ -12,13 +12,14 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
     fakeArray.splice(i, 0, curr);
     div.innerHTML = fakeArray.join('')
 
+    par.innerHTML += '</br>encoding of configurations:'
     var blank = `&#9633;`
     var epsilon = `&epsilon;`
     var init = `<div style='text-decoration:overline; display:inline'>("${epsilon}", "${blank}", "${fakeArray.slice(1).join('')}","${curr}")</div> = `
-    var initEnc = `(${alphEnc[epsilon]}, ${alphEnc[blank]},`;
+    var initEnc = `&#955;x.(x(${alphEnc[epsilon]})( ${alphEnc[blank]})(`;
     par.innerHTML += `<br/>${init + initEnc}`
     translateString(fakeArray.slice(1).join(''), par)
-    par.innerHTML += `, ${statesEnc[curr]})`
+    par.innerHTML += `)( ${statesEnc[curr]}))`
 
     for(let j = 0; j <= end+1; j++){
         dati.transitions.forEach(trans => {
@@ -34,8 +35,6 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
                 fakeArray.splice(i, 0, trans.next_state)
                 div.innerHTML += `${fakeArray.join('')}`
 
-                console.log(fakeArray.length)
-                console.log(i)
                 curr = trans.next_state;
                 if(curr == dati.machine.final_states && i == fakeArray.length-1){
                     div.innerHTML += ' stringa accettata'
@@ -49,7 +48,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
                 }
                 var conf = `<div style='text-decoration:overline; display:inline'>("${beforeHead == '' ? epsilon : beforeHead}","${fakeArray[i+1] || blank}","${fakeArray.slice(i+2).join('') || epsilon}","${curr}")</div> = `
 
-                par.innerHTML += `<br/>${conf}`
+                par.innerHTML += `<br/>${conf} &#955;x.(x`
                 if(ReverseString.join('') == '')
                     par.innerHTML += `(${alphEnc[epsilon]}`;
                 else if(ReverseString.join('').length == 1)
@@ -57,16 +56,16 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
                 else 
                     translateString(ReverseString.join(''), par);
 
-                par.innerHTML += `, ${alphEnc[fakeArray[i+1]] ?? alphEnc[blank]}`
+                par.innerHTML += `)( ${alphEnc[fakeArray[i+1]] ?? alphEnc[blank]}`
 
                 if(!fakeArray.slice(i+2).join(''))
-                    par.innerHTML += `, ${alphEnc[epsilon]}`;
+                    par.innerHTML += `)( ${alphEnc[epsilon]}`;
                 else if(fakeArray.slice(i+2).join('').length == 1)
-                    par.innerHTML += `, ${alphEnc[fakeArray.slice(i+2).join('')]}`;
+                    par.innerHTML += `)( ${alphEnc[fakeArray.slice(i+2).join('')]}`;
                 else 
                     translateString(fakeArray.slice(i+2).join(''), par);
                 
-                par.innerHTML += `, ${statesEnc[curr]})`
+                par.innerHTML += `)( ${statesEnc[curr]}))`
             }
         });
     }  

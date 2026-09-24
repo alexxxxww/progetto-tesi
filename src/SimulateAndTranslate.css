@@ -7,3 +7,12 @@
 svg.goButton:active{
     fill:grey
 }
+
+#scrollMessage{
+    position: sticky;
+    bottom: 0;
+    text-align: center;
+    font-size: 0.8rem;
+    background-color: rgba(222, 232, 231, 0.675);
+    margin-left: auto;
+}

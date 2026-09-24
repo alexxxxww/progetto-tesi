@@ -15,7 +15,6 @@ const edgeTypes = {
 function SimulateAndTranslate(){
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
-    const [toDo, setToDo] = useState(1); //0 = translate, default = 1 = simulate
     
     const { dati, input, alphEnc, statesEnc } = useOutletContext();
 
@@ -23,7 +22,9 @@ function SimulateAndTranslate(){
     const [activeRead, setActiveRead] = useState('');
     const [go, setGo] = useState(false);
     const [cell, setCell] = useState(1)
+    const [overflow, setOverflow] = useState()
     const charToRead = useRef(0)
+    const container = useRef();
 
     useEffect(() => {
         if (!dati || !input) return;
@@ -142,41 +143,53 @@ function SimulateAndTranslate(){
     const onEdgesChange = useCallback((changes) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)), []);
     const onConnect = useCallback((params) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)), []);
 
+    const handleScroll = () => {
+        const element = container.current;
+
+        if (!element) return;
+
+        const hasOverflow = element.scrollHeight > element.clientHeight;
+
+        setOverflow(hasOverflow);
+    };
+
     return(
-        <div>
-            <div className='d-flex justify-content-around m-4 vh-25'>
-                <button onClick={()=>setToDo(0)} className="w-25 btn-st pt-2 rounded border-3 d-flex justify-content-center align-items-center fw-bold">Translate in Lambda Calculus</button>
-                <button onClick={()=>setToDo(1)} className='w-25 btn-st p-2 rounded border-3 d-flex justify-content-center align-items-center fw-bold'>Simulate Turing Machine</button>
-            </div>
-            <div className="vh-75 m-2">
-                <div className={toDo == 0 ? 'd-none' : ''}>
-                    <div className='vh-10 row'>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#ff0073" className="goButton col bi bi-play-circle" viewBox="0 0 16 16" onClick={()=>{setGo(true); setCell(2)}}>
-                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                            <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445"/>
-                        </svg>
-                        <div id='tape' className='col fs-3 d-flex justify-content-center align-items-center' style={{borderCollapse:'collapse'}}></div>
+        <>
+            <div className="p-2" style={{height:'100vh', overflow:'hidden'}}>
+                <div className='row m-0' style={{height: '90vh', width: '100%', flexWrap: 'nowrap'}} >
+                    <div className='col-6 vh-90' style={{flex: '1 1 0', display: 'flex', flexDirection: 'column', minHeight: 0}}>
+                        <div className='row m-0 d-flex justify-content-center align-items-center' style={{flex: '0 0 10%', minHeight: 0}}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#ff0073" className="goButton col bi bi-play-circle" viewBox="0 0 16 16" onClick={()=>{setGo(true); setCell(2)}}>
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445"/>
+                            </svg>
+                            <div id='tape' className='col fs-3 d-flex justify-content-center align-items-center' style={{borderCollapse:'collapse'}}></div>
+                        </div>
+                        <div style={{flex: '0 0 90%', minHeight: 0}}>
+                            <ReactFlow
+                                nodes={nodes}
+                                edges={edges}
+                                onNodesChange={onNodesChange}
+                                onEdgesChange={onEdgesChange}
+                                onConnect={onConnect}
+                                fitView
+                                edgeTypes={edgeTypes}
+                                style={{width:'100%', height:'100%'}}
+                            />
+                        </div>
                     </div>
-                    <div style={{height: '60vh', width: '100vw'}} >
-                        <ReactFlow
-                            nodes={nodes}
-                            edges={edges}
-                            onNodesChange={onNodesChange}
-                            onEdgesChange={onEdgesChange}
-                            onConnect={onConnect}
-                            fitView
-                            edgeTypes={edgeTypes}
-                        />
-                    </div>
-                    <div id='write_here' className='vh-30 fs-5 mb-4'>
+                    <div className='col-6 vh-90' style={{textWrap: 'wrap', flex: '1 1 0', fontSize: '15px', display: 'flex', flexDirection: 'column', minHeight: 0}}>
+                        <div id='write_here_trad' ref={container} onScroll={handleScroll} style={{flex: '1 1 0', overflowY: 'auto'}} className='p-3'>
+                            {overflow && (<p id="scrollMessage" className='p-1 text-center rounded border border-black' style={{width:'fit-content'}}>Scroll to see more ↓</p>)}
+                        </div>
+                        <hr/>
+                        <div style={{flex: '1 1 0', overflowY: 'auto'}} className='p-3 text-center text-secondary'>Here will be generated the translation during the simulation of the Turing Machine...</div>
                     </div>
                 </div>
-                <div className={toDo == 0 ? 'vh-75' : 'd-none'}>
-                    <div id='write_here_trad' className='vh-40'>
-                    </div>
+                <div id='write_here' className='vh-10 fs-5'>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 
