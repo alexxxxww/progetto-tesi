@@ -2,7 +2,7 @@ import '@xyflow/react/dist/style.css' //https://reactflow.dev/learn
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, MarkerType } from '@xyflow/react';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { generateConfigurationsTree } from './Configuration.js';
+import { generateConfigurationsTree, generateTranslation } from './Configuration.js';
 import { translator } from "./fileTranslator.js";
 import "./SimulateAndTranslate.css"
 import SelfConnecting from './selfConnectingEdge';
@@ -28,6 +28,8 @@ function SimulateAndTranslate(){
 
     useEffect(() => {
         if (!dati || !input) return;
+
+        console.log(dati)
 
         setActiveState(dati.machine?.initial_state || '');
         setActiveRead(input[charToRead.current] || '');
@@ -78,7 +80,19 @@ function SimulateAndTranslate(){
             );
             if(!trans) return;
 
-            console.log(trans)
+            let numOfStates = dati.machine.set_of_states.length;
+            let numOfEl = dati.machine.alphabet.length;
+
+            let transauxM = '';
+            let NinM = '';
+
+            for(let j = 0; j < numOfStates; j++){
+                transauxM += `M<sub>${j}</sub>`
+                for(let n = 0; n < numOfEl; n++)
+                    NinM += `N<sup>${dati.machine.alphabet[n]}</sup><sub>${j}</sub>`
+            }
+
+            generateTranslation(trans, dati, numOfEl, numOfStates, transauxM, NinM);
 
             if(trans?.direction == 'R')
                 setCell(prev => prev + 1);
@@ -158,14 +172,14 @@ function SimulateAndTranslate(){
             <div className="p-2" style={{height:'100vh', overflow:'hidden'}}>
                 <div className='row m-0' style={{height: '90vh', width: '100%', flexWrap: 'nowrap'}} >
                     <div className='col-6 vh-90' style={{flex: '1 1 0', display: 'flex', flexDirection: 'column', minHeight: 0}}>
-                        <div className='row m-0 d-flex justify-content-center align-items-center' style={{flex: '0 0 10%', minHeight: 0}}>
+                        <div className='row m-0 d-flex justify-content-center align-items-center' style={{flex: '0 0 20%', minHeight: 0}}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#ff0073" className="goButton col bi bi-play-circle" viewBox="0 0 16 16" onClick={()=>{setGo(true); setCell(2)}}>
                                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                                 <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445"/>
                             </svg>
                             <div id='tape' className='col fs-3 d-flex justify-content-center align-items-center' style={{borderCollapse:'collapse'}}></div>
                         </div>
-                        <div style={{flex: '0 0 90%', minHeight: 0}}>
+                        <div style={{flex: '0 0 80%', minHeight: 0}}>
                             <ReactFlow
                                 nodes={nodes}
                                 edges={edges}
@@ -183,7 +197,7 @@ function SimulateAndTranslate(){
                             {overflow && (<p id="scrollMessage" className='p-1 text-center rounded border border-black' style={{width:'fit-content'}}>Scroll to see more ↓</p>)}
                         </div>
                         <hr/>
-                        <div style={{flex: '1 1 0', overflowY: 'auto'}} className='p-3 text-center text-secondary'>Here will be generated the translation during the simulation of the Turing Machine...</div>
+                        <div id='write_here_sim' style={{flex: '1 1 0', overflowY: 'auto'}} className='p-3 text-center text-secondary'>Here will be generated the translation during the simulation of the Turing Machine...</div>
                     </div>
                 </div>
                 <div id='write_here' className='vh-10 fs-5'>

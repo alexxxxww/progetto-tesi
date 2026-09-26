@@ -42,10 +42,12 @@ export function translator(dati, input, alphEnc, statesEnc){
 
 export function translateString(string, par){
     const input = string + `ε`;
+    let text = '';
 
     if(input.length >= 1){
         input.split("").forEach(symbol => {
             par.innerHTML += `(${lambda_alp}.x<sub>${symbol}</sub>`
+            text+=`(${lambda_alp}.x<sub>${symbol}</sub>`
         })
     } 
 
@@ -53,6 +55,8 @@ export function translateString(string, par){
 
     while(num > 0){
         par.innerHTML += `)`
+        text+=`)`
         num--;
     }
+    return text;
 }
