@@ -26,6 +26,11 @@ function SimulateAndTranslate(){
     const charToRead = useRef(0)
     const container = useRef();
 
+    var allM = {};
+
+    var numOfStates = dati.machine.set_of_states.length;
+    var numOfEl = dati.machine.alphabet.length;
+
     useEffect(() => {
         if (!dati || !input) return;
 
@@ -65,7 +70,7 @@ function SimulateAndTranslate(){
             generateTape(input);
             animation(1);
         }
-    }, [dati])
+    }, [dati, input])
 
     useEffect(()=> {
         animation(cell)
@@ -74,25 +79,22 @@ function SimulateAndTranslate(){
     useEffect(()=>{
         if(!dati?.transitions || !go ) return;
 
+        let lambda = `&#955;`
+        let set_of_states = [...dati.machine.set_of_states];
+
+        //M_i := lambda a.aN..N
+        for(let j = 0; j < numOfStates; j++){
+            let index = `M<sub>${set_of_states[j].split('_')[1]}</sub>`
+            allM[index] = `${lambda}a.a`;
+            for(let n = 0; n < numOfEl; n++)
+                allM[index] += `N<sup>${dati.machine.alphabet[n]}</sup><sub>${j}</sub>`
+        }
+
         const timer = setTimeout(() => { 
             const trans = dati.transitions.find(
                 (trans) => trans.current_state === activeState && trans.read === activeRead 
             );
             if(!trans) return;
-
-            let numOfStates = dati.machine.set_of_states.length;
-            let numOfEl = dati.machine.alphabet.length;
-
-            let transauxM = '';
-            let NinM = '';
-
-            for(let j = 0; j < numOfStates; j++){
-                transauxM += `M<sub>${j}</sub>`
-                for(let n = 0; n < numOfEl; n++)
-                    NinM += `N<sup>${dati.machine.alphabet[n]}</sup><sub>${j}</sub>`
-            }
-
-            generateTranslation(trans, dati, numOfEl, numOfStates, transauxM, NinM);
 
             if(trans?.direction == 'R')
                 setCell(prev => prev + 1);
@@ -100,14 +102,15 @@ function SimulateAndTranslate(){
                 setCell(prev => prev - 1)
 
             charToRead.current++;
-            console.log(input[charToRead.current])
+            
             const nextTrans = dati.transitions.find(
                 (nextTrans) => nextTrans.current_state === trans.next_state && 
                 nextTrans.read === input[charToRead.current]
             );
 
+            generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates, allM);
+            
             if (nextTrans) {
-                console.log(nextTrans)
                 setActiveRead(input[charToRead.current]);
                 setActiveState(nextTrans.current_state);
             } else {
@@ -127,6 +130,7 @@ function SimulateAndTranslate(){
         
     useEffect(()=>{
         setEdges(dati?.transitions.map((edge, index) => {
+
             const isActive = edge.current_state === activeState && edge.read === activeRead && go;
 
             const key = edge.current_state+edge.next_state;
@@ -197,7 +201,7 @@ function SimulateAndTranslate(){
                             {overflow && (<p id="scrollMessage" className='p-1 text-center rounded border border-black' style={{width:'fit-content'}}>Scroll to see more ↓</p>)}
                         </div>
                         <hr/>
-                        <div id='write_here_sim' style={{flex: '1 1 0', overflowY: 'auto'}} className='p-3 text-center text-secondary'>Here will be generated the translation during the simulation of the Turing Machine...</div>
+                        <div id='write_here_sim' style={{flex: '1 1 0', overflowY: 'auto'}} className='p-3 text-center text-secondary'></div>
                     </div>
                 </div>
                 <div id='write_here' className='vh-10 fs-5'>

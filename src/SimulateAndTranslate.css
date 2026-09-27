@@ -16,3 +16,8 @@ svg.goButton:active{
     background-color: rgba(222, 232, 231, 0.675);
     margin-left: auto;
 }
+
+#write_here_sim:empty:before {
+  content:'Here will be generated the translation during the simulation of the Turing Machine...';
+  color:gray
+}
