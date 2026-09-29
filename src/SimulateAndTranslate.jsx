@@ -23,8 +23,11 @@ function SimulateAndTranslate(){
     const [go, setGo] = useState(false);
     const [cell, setCell] = useState(1)
     const [overflow, setOverflow] = useState()
+    const [conf, setConf] = useState(0);
+
     const charToRead = useRef(0)
     const container = useRef();
+    const containerTranslate = useRef();
 
     var allM = {};
 
@@ -90,6 +93,32 @@ function SimulateAndTranslate(){
                 allM[index] += `N<sup>${dati.machine.alphabet[n]}</sup><sub>${j}</sub>`
         }
 
+        if (conf === 0) {
+            const firstTrans = dati.transitions.find(
+                trans =>
+                    trans.current_state === dati.machine.initial_state &&
+                    trans.read === input[0]
+            );
+
+            const firstNextTrans = dati.transitions.find(
+                nextTrans =>
+                    nextTrans.current_state === firstTrans?.next_state &&
+                    nextTrans.read === input[1]
+            );
+
+            if (firstTrans) {
+                generateTranslation(
+                    firstTrans,
+                    firstNextTrans,
+                    dati,
+                    numOfEl,
+                    numOfStates,
+                    allM,
+                    0
+                );
+            }
+        }
+
         const timer = setTimeout(() => { 
             const trans = dati.transitions.find(
                 (trans) => trans.current_state === activeState && trans.read === activeRead 
@@ -108,9 +137,10 @@ function SimulateAndTranslate(){
                 nextTrans.read === input[charToRead.current]
             );
 
-            generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates, allM);
+            generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates, allM, conf+1);
             
             if (nextTrans) {
+                setConf(prev => prev + 1)
                 setActiveRead(input[charToRead.current]);
                 setActiveState(nextTrans.current_state);
             } else {
@@ -118,6 +148,7 @@ function SimulateAndTranslate(){
                 setCell(1)
                 setActiveRead(input[charToRead.current] || '');
                 setActiveState(dati.machine?.initial_state || '');
+                setConf(0)
                 setGo(false)
                 return;
             } 
@@ -201,7 +232,7 @@ function SimulateAndTranslate(){
                             {overflow && (<p id="scrollMessage" className='p-1 text-center rounded border border-black' style={{width:'fit-content'}}>Scroll to see more ↓</p>)}
                         </div>
                         <hr/>
-                        <div id='write_here_sim' style={{flex: '1 1 0', overflowY: 'auto'}} className='p-3 text-center text-secondary'></div>
+                        <div id='write_here_sim' ref={containerTranslate} style={{flex: '1 1 0', overflowY: 'auto'}} className='p-3'></div>
                     </div>
                 </div>
                 <div id='write_here' className='vh-10 fs-5'>
