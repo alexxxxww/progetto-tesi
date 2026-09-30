@@ -176,25 +176,26 @@ export function generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates
 
     const overline = `<span style='border-top:1px solid black'>`
     const closeOv = `</span>`
-    const C = `${overline}C<sub>${nConf}${closeOv}`
+    const C = `${overline}C<sub>${nConf}</sub>${closeOv}`
     const placeholder = `(${lambda}u.${lambda}a.${lambda}v.${lambda}q.q${Q}aukv)`
 
     let encoding = {}
 
     const content = confTrans.index.match(/<span[^>]*>([\s\S]*?)<\/span>/)[1];//estrae il contenuto dello span
     const values = [...content.matchAll(/"([^"]*)"/g)].map(m => m[1]);
+
     //s
     let s = `${overline}${values[0]}${closeOv}`
     encoding[s] = `${confTrans.conf.split('(x')[1].split(' ')[0]}`
     //a
     let a = `${overline}${values[1]}${closeOv}`
-    encoding[a] = `${confTrans.conf.split(' ')[1].split(' ')[0]}`
+    encoding[a] = `${confTrans.conf.split(') ')[1]})`
     //r
     let r = `${overline}${values[2]}${closeOv}`
-    encoding[r] = `${confTrans.conf.split(' ')[2].split(' ')[0]}`
+    encoding[r] = `${confTrans.conf.split(') ')[2]})`
     //q
     let q = `${overline}${values[3]}${closeOv}`
-    encoding[q] = `${confTrans.conf.split(` `)[3].split(')')[0]}`
+    encoding[q] = `${confTrans.conf.split(') ')[3].split('))')[0]})`
 
     let translation = '';
     translation += `transk${C} = ${theta}transauxk${C}</br>
@@ -207,14 +208,15 @@ export function generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates
         = (${lambda}x.(x${Object.keys(encoding).join(' ')}))${placeholder}</br>
         →<sub>det</sub>${placeholder}${Object.keys(encoding).join(' ')}</br>
         →<sub>det</sub>${q}${Q}${a} ${s}k${r}}</br>
-        = ${encoding[q]})${Q}${a} ${s}k${r}</br>
+        = ${encoding[q]}${Q}${a} ${s}k${r}</br>
         →<sub>det</sub><span style='color:var(--orange)'>Q<sub>${trans.current_state.split('_')[1]}</sub></span>${a} ${s}k${r}</br>
         = <span style='color:var(--orange)'>(${M.replaceAll('N', 'T')}u)</span>${a} ${s}k${r}</br>
         →<sub>det</sub>${a}${M.replaceAll('N', 'T').split(`a.a`)[1]}${s} k ${r}</br>
         = ${encoding[a]}${M.replaceAll('N', 'T').split(`a.a`)[1]}${s} k ${r}</br>
         →<sub>det</sub>${N.replaceAll('x', `(${lambda}z.transz)`)}${s} k ${r}</br>`
 
-    if(dati.machine.final_states.includes(trans.current_state)){
+
+    /*if(dati.machine.final_states.includes(trans.current_state)){
         translation += ``
     } else if(trans.direction === '-') {
 
@@ -222,7 +224,7 @@ export function generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates
 
     } else if(trans.direction === 'R') {
 
-    }//?
+    }*/
 
     par.innerHTML += translation + '</br>';
 }
