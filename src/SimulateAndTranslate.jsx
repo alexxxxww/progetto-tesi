@@ -23,7 +23,7 @@ function SimulateAndTranslate(){
     const [go, setGo] = useState(false);
     const [cell, setCell] = useState(1)
     const [overflow, setOverflow] = useState()
-    const [conf, setConf] = useState(0);
+    const [conf, setConf] = useState(1);
 
     const charToRead = useRef(0)
     const container = useRef();
@@ -84,16 +84,21 @@ function SimulateAndTranslate(){
 
         let lambda = `&#955;`
         let set_of_states = [...dati.machine.set_of_states];
+        let blank = `&#9633;`
 
         //M_i := lambda a.aN..N
         for(let j = 0; j < numOfStates; j++){
             let index = `M<sub>${set_of_states[j].split('_')[1]}</sub>`
             allM[index] = `${lambda}a.a`;
-            for(let n = 0; n < numOfEl; n++)
-                allM[index] += `N<sup>${dati.machine.alphabet[n]}</sup><sub>${j}</sub>`
+            for(let n = 0; n < numOfEl+1; n++){
+                if(n === numOfEl)
+                    allM[index] += `N<sup>${blank}</sup><sub>${j}</sub>`
+                else
+                    allM[index] += `N<sup>${dati.machine.alphabet[n]}</sup><sub>${j}</sub>`
+            }
         }
 
-        if (conf === 0) {
+        if (conf === 1) {
             const firstTrans = dati.transitions.find(
                 trans =>
                     trans.current_state === dati.machine.initial_state &&
@@ -114,7 +119,7 @@ function SimulateAndTranslate(){
                     numOfEl,
                     numOfStates,
                     allM,
-                    0
+                    1
                 );
             }
         }
@@ -148,7 +153,7 @@ function SimulateAndTranslate(){
                 setCell(1)
                 setActiveRead(input[charToRead.current] || '');
                 setActiveState(dati.machine?.initial_state || '');
-                setConf(0)
+                setConf(1)
                 setGo(false)
                 return;
             } 
