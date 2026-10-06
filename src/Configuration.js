@@ -1,7 +1,8 @@
 import { translateString } from "./fileTranslator";
 
 var numOfConf;
-var confEncArray = []
+var confEncArray = [];
+var transaux = '';
 
 export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
     const div = document.getElementById("write_here");
@@ -111,6 +112,16 @@ function genConfArray(){
     }
 }
 
+export function pre_trans(allM){
+    const par = document.getElementById('write_here_sim')
+    let lambda = `&#955;`
+    transaux = `(${lambda}x.${lambda}k.${lambda}y.y(${lambda}u.${lambda}a.${lambda}v.${lambda}q.q${Object.keys(allM).join('')}aukv))`;
+    
+    par.innerHTML = `Q<sub>i</sub> := M<sub>i</sub>{x ← ${lambda}z.transz}
+        </br>T<sub>i</sub><sup>j</sup> := N<sub>i</sub><sup>j</sup>{x ← ${lambda}z.transz}</br>
+        transaux := ${transaux}</br></br>`
+}
+
 export function generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates, allM, nConf){
     const par = document.getElementById('write_here_sim')
     let lambda = `&#955;`
@@ -119,7 +130,7 @@ export function generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates
     let blank = `&#9633;`
     let epsilon = `&epsilon;`
     let theta = `&theta;`
-        
+
     AlphBlank.push(blank)
     let numOfElBlank = (AlphBlank).length;
 
@@ -133,15 +144,14 @@ export function generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates
     let P = '';
     let R = '';
 
-    console.log(trans)
     let l = trans.next_state.split('_')[1]
     let h = trans.read || blank
     let i = nextTrans?.read || blank
 
     if(dati.machine.final_states.includes(trans.current_state))
-        N = `${lambda}u.${lambda}k.${lambda}v.k<u,<span style='text-decoration:overline'>${trans.read}</span>, v, <span style='text-decoration:overline'>${trans.current_state}</span>`
+        N = `${lambda}u.${lambda}k.${lambda}v.k\<u,<span style='text-decoration:overline'>${trans.read}</span>, v, <span style='text-decoration:overline'>${trans.current_state}</span>\>`
     else if(trans.direction == '-')//la testina resta ferma: da implementare
-        N = `${lambda}u.${lambda}k.${lambda}v.xk<u,<span style='text-decoration:overline'>${trans.write}</span>, v, <span style='text-decoration:overline'>${trans.next_state}</span>`
+        N = `${lambda}u.${lambda}k.${lambda}v.xk\<u,<span style='text-decoration:overline'>${trans.write}</span>, v, <span style='text-decoration:overline'>${trans.next_state}</span>\>`
     else if(trans.direction == 'L'){
         N = `${lambda}u.u`
         for(let j = 0; j < numOfElBlank; j++){
@@ -175,14 +185,6 @@ export function generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates
             R = `${lambda}k.append<sup>${h}</sup>(${lambda}w.xk<w, <span style='text-decoration:overline'>${i}</span>, <span style='text-decoration:overline'>${epsilon}</span>, <span style='text-decoration:overline'>${trans.next_state}</span>>)`
         else
             R = `${lambda}u.${lambda}k.append<sup>${h}</sup>(${lambda}w.xk<w, <span style='text-decoration:overline'>${i}</span>, u, <span style='text-decoration:overline'>${trans.next_state}</span>>)`
-    }
-
-    let transaux = `(${lambda}x.${lambda}k.${lambda}y.y(${lambda}u.${lambda}a.${lambda}v.${lambda}q.q${Object.keys(allM).join('')}aukv))`;
-
-    if(nConf === 1){
-        par.innerHTML = `Q<sub>i</sub> := M<sub>i</sub>{x ← ${lambda}z.transz}
-            </br>T<sub>i</sub><sup>j</sup> := N<sub>i</sub><sup>j</sup>{x ← ${lambda}z.transz}</br>
-            transaux := ${transaux}</br></br>`
     }
 
     const confTrans = confEncArray.find(

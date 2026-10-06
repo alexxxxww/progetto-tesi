@@ -2,7 +2,7 @@ import '@xyflow/react/dist/style.css' //https://reactflow.dev/learn
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, MarkerType } from '@xyflow/react';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { generateConfigurationsTree, generateTranslation } from './Configuration.js';
+import { generateConfigurationsTree, generateTranslation, pre_trans } from './Configuration.js';
 import { translator } from "./fileTranslator.js";
 import "./SimulateAndTranslate.css"
 import SelfConnecting from './selfConnectingEdge';
@@ -98,7 +98,10 @@ function SimulateAndTranslate(){
             }
         }
 
-        if (conf === 1) {
+        if(conf === 1)
+            pre_trans(allM)
+
+        /*if (conf === 1) {
             const firstTrans = dati.transitions.find(
                 trans =>
                     trans.current_state === dati.machine.initial_state &&
@@ -122,7 +125,7 @@ function SimulateAndTranslate(){
                     1
                 );
             }
-        }
+        }*/
 
         const timer = setTimeout(() => { 
             const trans = dati.transitions.find(
@@ -142,13 +145,27 @@ function SimulateAndTranslate(){
                 nextTrans.read === input[charToRead.current]
             );
 
-            generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates, allM, conf+1);
-            
+            if(conf === 1) {
+                generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates, allM, 1);
+            } else {
+                generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates, allM, conf);
+            }
+
             if (nextTrans) {
+                /*if(conf>1)
+                    generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates, allM, conf);*/
                 setConf(prev => prev + 1)
                 setActiveRead(input[charToRead.current]);
                 setActiveState(nextTrans.current_state);
             } else {
+                const lastTrans = {
+                    current_state: trans.next_state,
+                    read: blank,
+                    write: blank,
+                    direction: '-',
+                    next_state: trans.next_state 
+                }
+                generateTranslation(lastTrans, lastTrans, dati, numOfEl, numOfStates, allM, conf+1);
                 charToRead.current = 0;
                 setCell(1)
                 setActiveRead(input[charToRead.current] || '');
