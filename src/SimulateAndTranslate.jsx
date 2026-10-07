@@ -101,32 +101,6 @@ function SimulateAndTranslate(){
         if(conf === 1)
             pre_trans(allM)
 
-        /*if (conf === 1) {
-            const firstTrans = dati.transitions.find(
-                trans =>
-                    trans.current_state === dati.machine.initial_state &&
-                    trans.read === input[0]
-            );
-
-            const firstNextTrans = dati.transitions.find(
-                nextTrans =>
-                    nextTrans.current_state === firstTrans?.next_state &&
-                    nextTrans.read === input[1]
-            );
-
-            if (firstTrans) {
-                generateTranslation(
-                    firstTrans,
-                    firstNextTrans,
-                    dati,
-                    numOfEl,
-                    numOfStates,
-                    allM,
-                    1
-                );
-            }
-        }*/
-
         const timer = setTimeout(() => { 
             const trans = dati.transitions.find(
                 (trans) => trans.current_state === activeState && trans.read === activeRead 
@@ -152,8 +126,6 @@ function SimulateAndTranslate(){
             }
 
             if (nextTrans) {
-                /*if(conf>1)
-                    generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates, allM, conf);*/
                 setConf(prev => prev + 1)
                 setActiveRead(input[charToRead.current]);
                 setActiveState(nextTrans.current_state);

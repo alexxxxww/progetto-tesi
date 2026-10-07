@@ -108,7 +108,6 @@ function genConfArray(){
                 nOfConf: j
             });
         }
-        console.log(confEncArray)
     }
 }
 
@@ -117,8 +116,9 @@ export function pre_trans(allM){
     let lambda = `&#955;`
     transaux = `(${lambda}x.${lambda}k.${lambda}y.y(${lambda}u.${lambda}a.${lambda}v.${lambda}q.q${Object.keys(allM).join('')}aukv))`;
     
-    par.innerHTML = `Q<sub>i</sub> := M<sub>i</sub>{x ← ${lambda}z.transz}
-        </br>T<sub>i</sub><sup>j</sup> := N<sub>i</sub><sup>j</sup>{x ← ${lambda}z.transz}</br>
+    par.innerHTML = `Q<sub>i</sub> := M<sub>i</sub>{x ← ${lambda}z.transz}</br>
+        T<sub>i</sub><sup>j</sup> := N<sub>i</sub><sup>j</sup>{x ← ${lambda}z.transz}</br>
+        V<sub>i</sub> := R<sub>i</sub>{x ← ${lambda}z.transz}</br>
         transaux := ${transaux}</br></br>`
 }
 
@@ -147,45 +147,6 @@ export function generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates
     let l = trans.next_state.split('_')[1]
     let h = trans.read || blank
     let i = nextTrans?.read || blank
-
-    if(dati.machine.final_states.includes(trans.current_state))
-        N = `${lambda}u.${lambda}k.${lambda}v.k\<u,<span style='text-decoration:overline'>${trans.read}</span>, v, <span style='text-decoration:overline'>${trans.current_state}</span>\>`
-    else if(trans.direction == '-')//la testina resta ferma: da implementare
-        N = `${lambda}u.${lambda}k.${lambda}v.xk\<u,<span style='text-decoration:overline'>${trans.write}</span>, v, <span style='text-decoration:overline'>${trans.next_state}</span>\>`
-    else if(trans.direction == 'L'){
-        N = `${lambda}u.u`
-        for(let j = 0; j < numOfElBlank; j++){
-            if(AlphBlank[j] === blank)
-                N += `P<sup>${l}, ${h}</sup>`
-            else
-                N += `P<sup>${l}, ${h}</sup><sub>${AlphBlank[j]}</sub>`
-        }
-        if(i === blank)
-            P = `${lambda}k.append<sup>${h}</sup>(${lambda}w.xk<<span style='text-decoration:overline'>${epsilon}</span>, <span style='text-decoration:overline'>${i}</span>, w, <span style='text-decoration:overline'>${trans.next_state}</span>>)`
-        else
-            P = `${lambda}u.${lambda}k.append<sup>${h}</sup>(${lambda}w.xk<u, <span style='text-decoration:overline'>${i}</span>, w, <span style='text-decoration:overline'>${trans.next_state}</span>>)`//implementare append
-    } else if(trans.direction == 'R'){
-        N = `${lambda}u.${lambda}v.v`
-        for(let j = 0; j < numOfElBlank; j++){
-            if(AlphBlank[j] === blank){
-                if(trans.direction === 'R')
-                    N += `R`
-                else if(trans.direction === 'L')
-                    N += `L`
-                N += `<sup>${l}, ${h}</sup>`
-            } else {
-                if(trans.direction === 'R')
-                    N += `R`
-                else if(trans.direction === 'L')
-                    N += `L`
-                N += `<sup>${l}, ${h}</sup><sub>${AlphBlank[j]}</sub>`
-            }
-        }
-        if(i === blank)
-            R = `${lambda}k.append<sup>${h}</sup>(${lambda}w.xk<w, <span style='text-decoration:overline'>${i}</span>, <span style='text-decoration:overline'>${epsilon}</span>, <span style='text-decoration:overline'>${trans.next_state}</span>>)`
-        else
-            R = `${lambda}u.${lambda}k.append<sup>${h}</sup>(${lambda}w.xk<w, <span style='text-decoration:overline'>${i}</span>, u, <span style='text-decoration:overline'>${trans.next_state}</span>>)`
-    }
 
     const confTrans = confEncArray.find(
         c => c.nOfConf === nConf
@@ -230,19 +191,63 @@ export function generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates
         = <span style='color:var(--orange)'>(${M.replaceAll('N', 'T')}u)</span>${a} ${s}k${r}</br>
         →<sub>det</sub>${a}${M.replaceAll('N', 'T').split(`a.a`)[1]}${s} k ${r}</br>
         = ${encoding[a]}${M.replaceAll('N', 'T').split(`a.a`)[1]}${s} k ${r}</br>
-        →<sub>det</sub>T<sup>${values[1]}</sup><sub>${trans.current_state.split('_')[1]}</sub>${s} k ${r}</br>
-        = ${N.replaceAll('x', `(${lambda}z.transz)`)}${s} k ${r}</br>
-        </br>`
+        →<sub>det</sub>T<sup>${values[1]}</sup><sub>${trans.current_state.split('_')[1]}</sub>${s} k ${r}</br>`
+    
+    if(dati.machine.final_states.includes(trans.current_state)){
+        N = `${lambda}u.${lambda}k.${lambda}v.k&lt;u,<span style='text-decoration:overline'>${trans.read}</span>, v, <span style='text-decoration:overline'>${trans.current_state}</span>&gt;`
+        translation += `=${N}${s} k ${r}</br>
+            →k&lt;${Object.keys(encoding).join(' ')}&gt;</br>
+            =k${confTrans.index}</br>
+            =k${C}`
+    } else if(trans.direction == '-'){//la testina resta ferma: da implementare
+        N = `${lambda}u.${lambda}k.${lambda}v.xk&lt;u,<span style='text-decoration:overline'>${trans.write}</span>, v, <span style='text-decoration:overline'>${trans.next_state}</span>&gt;`
+        translation += `...`
+    } else if(trans.direction == 'L') {
+        N = `${lambda}u.u`
+        for(let j = 0; j < numOfElBlank; j++){
+            if(AlphBlank[j] === blank)
+                N += `P<sup>${l}, ${h}</sup>`
+            else
+                N += `P<sup>${l}, ${h}</sup><sub>${AlphBlank[j]}</sub>`
+        }
+        if(i === blank)
+            P = `${lambda}k.append<sup>${h}</sup>(${lambda}w.xk<<span style='text-decoration:overline'>${epsilon}</span>, <span style='text-decoration:overline'>${i}</span>, w, <span style='text-decoration:overline'>${trans.next_state}</span>>)`
+        else
+            P = `${lambda}u.${lambda}k.append<sup>${h}</sup>(${lambda}w.xk<u, <span style='text-decoration:overline'>${i}</span>, w, <span style='text-decoration:overline'>${trans.next_state}</span>>)`//implementare append
+        translation += `...`
+    } else if(trans.direction == 'R'){
+        N = `${lambda}u.${lambda}k.${lambda}v.v`
+        for(let j = 0; j < numOfElBlank; j++){
+            if(AlphBlank[j] === blank){
+                if(trans.direction === 'R')
+                    N += `R`
+                else if(trans.direction === 'L')
+                    N += `L`
+                N += `<sup>${l}, ${h}</sup>`
+            } else {
+                if(trans.direction === 'R')
+                    N += `R`
+                else if(trans.direction === 'L')
+                    N += `L`
+                N += `<sup>${l}, ${h}</sup><sub>${AlphBlank[j]}</sub>`
+            }
+        }
+        N += `ku`
+        if(i === blank)
+            R = `${lambda}k.append<sup>${h}</sup>(${lambda}w.xk<w, <span style='text-decoration:overline'>${i}</span>, <span style='text-decoration:overline'>${epsilon}</span>, <span style='text-decoration:overline'>${trans.next_state}</span>>)`
+        else
+            R = `${lambda}u.${lambda}k.append<sup>${h}</sup>(${lambda}w.xk<w, <span style='text-decoration:overline'>${i}</span>, u, <span style='text-decoration:overline'>${trans.next_state}</span>>)`
+        translation += `=(${N}){x ← ${lambda}z.transz}${s} k ${r}</br>
+            =(${N.replaceAll('R', 'V')})${s} k ${r}</br>
+            →<sub>det</sub>${r}${N.replaceAll('R','V').split('v.v')[1].split('k')[0]}k${s}</br>`
+        if(values[2] == epsilon){
+            translation += `=${encoding[r]}${N.replaceAll('R','V').split('v.v')[1].split('k')[0]}k${s}</br>
+                →<sub>det</sub>V<sup>${l}, ${h}</sup>k${s}</br>
+                `
+        } else {
 
-    /*if(dati.machine.final_states.includes(trans.current_state)){
-        translation += ``
-    } else if(trans.direction === '-') {
-
-    } else if(trans.direction === 'L') {
-
-    } else if(trans.direction === 'R') {
-
-    }*/
+        }
+    }
 
     par.innerHTML += translation + '</br>';
 }
