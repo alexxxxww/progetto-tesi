@@ -31,8 +31,6 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
         const trans = dati.transitions.find(
             t => (t.current_state == curr && t.read == inputArray[i])
         )
-
-        div.innerHTML += ' &#8866; '
          
         if(!trans) i++
 
@@ -40,15 +38,9 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
             i++;//i = posizione testina
         else if(trans?.direction == 'L')
             i--
+
         let fakeArray = [...inputArray];
-
-        fakeArray.splice(i, 0, trans?.next_state || curr)
-        div.innerHTML += `${fakeArray.join('')}`
         
-        if(dati.machine.final_states.includes(curr) && i == fakeArray.length-1){
-            div.innerHTML += ' stringa accettata'
-        }
-
         numOfConf++;
 
         //gestire caso direzione L
@@ -57,7 +49,8 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
         for(let n = i-1; n >= 0; n--){
             ReverseString = [...ReverseString, beforeHead[n]]
         }
-        var conf = `<span style='border-top:1px solid black'>C<sub>${numOfConf}</sub></span> = <span style='text-decoration:overline; display:inline'>("${beforeHead == '' ? epsilon : beforeHead}","${trans ? fakeArray[i-1] : blank}","${fakeArray.slice(i+1).join('') || epsilon}","${curr}")</span> = `
+
+        var conf = `<span style='border-top:1px solid black'>C<sub>${numOfConf}</sub></span> = <span style='text-decoration:overline; display:inline'>("${beforeHead == '' ? epsilon : beforeHead}","${trans ? fakeArray[i-1] : blank}","${fakeArray.slice(i).join('') || epsilon}","${curr}")</span> = `
 
         par.innerHTML += `<br/>${conf} &#955;x.(x`
         if(ReverseString.join('') == '')
@@ -69,17 +62,30 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
 
         par.innerHTML += `) (${alphEnc[fakeArray[i-1]] ?? alphEnc[blank]}`;
 
-        if(!fakeArray.slice(i+1).join(''))
+        if(!fakeArray.slice(i).join(''))
             par.innerHTML += `) (${alphEnc[epsilon]}`;
-        else if(fakeArray.slice(i+1).join('').length == 1)
-            par.innerHTML += `) (${alphEnc[fakeArray.slice(i+1).join('')]}`
+        else if(fakeArray.slice(i).join('').length == 1)
+            par.innerHTML += `) (${alphEnc[fakeArray.slice(i).join('')]}`
         else{
             par.innerHTML += ') ('
-            translateString(fakeArray.slice(i+1).join(''), par);
+            translateString(fakeArray.slice(i).join(''), par);
         }
         par.innerHTML += `) (${statesEnc[curr]}))`  
 
-        if(dati.machine.final_states.includes(curr)) break;
+        if(dati.machine.final_states.includes(curr) /*&& i == fakeArray.length-1*/){
+            div.innerHTML += ' stringa accettata'
+            break ciclo
+        } 
+        div.innerHTML += ' &#8866; '
+        if(!trans){
+            div.innerHTML += ' transizione non trovata';
+            break ciclo
+        }
+
+        fakeArray.splice(i, 0, trans?.next_state || curr)
+        div.innerHTML += `${fakeArray.join('')}`
+
+        //if(dati.machine.final_states.includes(curr) || !trans.next_state) break;
         curr = trans.next_state;
     } 
     genConfArray();
@@ -122,7 +128,7 @@ export function pre_trans(allM){
         transaux := ${transaux}</br></br>`
 }
 
-export function generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates, allM, nConf){
+export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, nConf){
     const par = document.getElementById('write_here_sim')
     let lambda = `&#955;`
     let N = '';
@@ -194,13 +200,13 @@ export function generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates
         →<sub>det</sub>T<sup>${values[1]}</sup><sub>${trans.current_state.split('_')[1]}</sub>${s} k ${r}</br>`
     
     if(dati.machine.final_states.includes(trans.current_state)){
-        N = `${lambda}u.${lambda}k.${lambda}v.k&lt;u,<span style='text-decoration:overline'>${trans.read}</span>, v, <span style='text-decoration:overline'>${trans.current_state}</span>&gt;`
+        N = `${lambda}u.${lambda}k.${lambda}v.k&lt;u,${overline}${trans.read}${closeOv}, v, ${overline}${trans.current_state}${closeOv}&gt;`
         translation += `=${N}${s} k ${r}</br>
             →k&lt;${Object.keys(encoding).join(' ')}&gt;</br>
             =k${confTrans.index}</br>
             =k${C}`
     } else if(trans.direction == '-'){//la testina resta ferma: da implementare
-        N = `${lambda}u.${lambda}k.${lambda}v.xk&lt;u,<span style='text-decoration:overline'>${trans.write}</span>, v, <span style='text-decoration:overline'>${trans.next_state}</span>&gt;`
+        N = `${lambda}u.${lambda}k.${lambda}v.xk&lt;u,${overline}${trans.write}${closeOv}, v, ${overline}${trans.next_state}${closeOv}&gt;`
         translation += `...`
     } else if(trans.direction == 'L') {
         N = `${lambda}u.u`
@@ -211,41 +217,56 @@ export function generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates
                 N += `P<sup>${l}, ${h}</sup><sub>${AlphBlank[j]}</sub>`
         }
         if(i === blank)
-            P = `${lambda}k.append<sup>${h}</sup>(${lambda}w.xk<<span style='text-decoration:overline'>${epsilon}</span>, <span style='text-decoration:overline'>${i}</span>, w, <span style='text-decoration:overline'>${trans.next_state}</span>>)`
+            P = `${lambda}k.append<sup>${h}</sup>(${lambda}w.xk&lt;${overline}${epsilon}${closeOv}, ${overline}${i}${closeOv}, w, ${overline}${trans.next_state}${closeOv}&gt;)`
         else
-            P = `${lambda}u.${lambda}k.append<sup>${h}</sup>(${lambda}w.xk<u, <span style='text-decoration:overline'>${i}</span>, w, <span style='text-decoration:overline'>${trans.next_state}</span>>)`//implementare append
+            P = `${lambda}u.${lambda}k.append<sup>${h}</sup>(${lambda}w.xk&lt;u, ${overline}${i}${closeOv}, w, ${overline}${trans.next_state}${closeOv}&gt;)`//implementare append
         translation += `...`
     } else if(trans.direction == 'R'){
         N = `${lambda}u.${lambda}k.${lambda}v.v`
         for(let j = 0; j < numOfElBlank; j++){
             if(AlphBlank[j] === blank){
-                if(trans.direction === 'R')
+                //if(trans.direction === 'R')
                     N += `R`
-                else if(trans.direction === 'L')
-                    N += `L`
+                /*else if(trans.direction === 'L')
+                    N += `L`*/
                 N += `<sup>${l}, ${h}</sup>`
             } else {
-                if(trans.direction === 'R')
+                //if(trans.direction === 'R')
                     N += `R`
-                else if(trans.direction === 'L')
-                    N += `L`
+                /*else if(trans.direction === 'L')
+                    N += `L`*/
                 N += `<sup>${l}, ${h}</sup><sub>${AlphBlank[j]}</sub>`
             }
         }
         N += `ku`
-        if(i === blank)
-            R = `${lambda}k.append<sup>${h}</sup>(${lambda}w.xk<w, <span style='text-decoration:overline'>${i}</span>, <span style='text-decoration:overline'>${epsilon}</span>, <span style='text-decoration:overline'>${trans.next_state}</span>>)`
-        else
-            R = `${lambda}u.${lambda}k.append<sup>${h}</sup>(${lambda}w.xk<w, <span style='text-decoration:overline'>${i}</span>, u, <span style='text-decoration:overline'>${trans.next_state}</span>>)`
+        let a_p = r.split('>')[1][0]
+        let R_abb = ''
+        if(i === blank){
+            R = `${lambda}k.append<sup>${h}</sup>(${lambda}w.xk&lt;w, ${overline}${i}${closeOv}, ${overline}${epsilon}${closeOv}, ${overline}${trans.next_state}${closeOv}&gt;)`
+            R_abb = `R<sup>${l}, ${h}</sup>`
+        } else {
+            R = `${lambda}u.${lambda}k.append<sup>${h}</sup>(${lambda}w.xk&lt;w, ${overline}${i}${closeOv}, u, ${overline}${trans.next_state}${closeOv}&gt;)`
+            R_abb = `R<sup>${l}, ${h}</sup><sub>${a_p}</sub>`
+        }
         translation += `=(${N}){x ← ${lambda}z.transz}${s} k ${r}</br>
             =(${N.replaceAll('R', 'V')})${s} k ${r}</br>
             →<sub>det</sub>${r}${N.replaceAll('R','V').split('v.v')[1].split('k')[0]}k${s}</br>`
         if(values[2] == epsilon){
             translation += `=${encoding[r]}${N.replaceAll('R','V').split('v.v')[1].split('k')[0]}k${s}</br>
                 →<sub>det</sub>V<sup>${l}, ${h}</sup>k${s}</br>
-                `
+                ...`
         } else {
-
+            translation += `=${overline}${r.split('>')[1][0]}${closeOv} ${overline}${r.split('>')[1].split('</')[0].substring(1)}${closeOv}${N.replaceAll('R','V').split('v.v')[1].split('k')[0]}k${s}</br>
+                =(${alphEnc[a_p]}${overline}${r.split('>')[1].split('</')[0].substring(1)}${closeOv})${N.replaceAll('R','V').split('v.v')[1].split('k')[0]}k${s}</br>
+                →<sub>det</sub>${R_abb.replace('R', 'V')}${overline}${r.split('>')[1].split('</')[0].substring(1)}${closeOv}k${s}</br>
+                =${R.replace('x', `(${lambda}z.transz)`)}${overline}${r.split('>')[1].split('</')[0].substring(1)}${closeOv}k${s}</br>`
+            let plhold = `${R.replace('x', `(${lambda}z.transz)`)}`
+            let rplcU = `${r.split('>')[1].split('</')[0].substring(1)}`
+            translation += `→<sub>det</sub>${plhold.split(`${lambda}k.`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `)}${s}</br>
+                →<sub>det</sub>${plhold.split(`</sup>`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `)}${overline}(${a}${s})${closeOv}</br>
+                →<sub>det</sub>${plhold.split(`w.`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `).split(')')[0].replace('w', `${overline}(${a}${s})${closeOv}`)}</br>
+                →<sub>det</sub>transk${plhold.split(`)k`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `).split(')')[0].replace('w', `${overline}(${a}${s})${closeOv}`)}</br>
+                =transk${overline}()${closeOv}</br>`
         }
     }
 

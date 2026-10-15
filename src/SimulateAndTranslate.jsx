@@ -98,8 +98,9 @@ function SimulateAndTranslate(){
             }
         }
 
-        if(conf === 1)
+        if(conf === 1){
             pre_trans(allM)
+        }
 
         const timer = setTimeout(() => { 
             const trans = dati.transitions.find(
@@ -120,9 +121,9 @@ function SimulateAndTranslate(){
             );
 
             if(conf === 1) {
-                generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates, allM, 1);
+                generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, 1);
             } else {
-                generateTranslation(trans, nextTrans, dati, numOfEl, numOfStates, allM, conf);
+                generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, conf);
             }
 
             if (nextTrans) {
@@ -137,7 +138,7 @@ function SimulateAndTranslate(){
                     direction: '-',
                     next_state: trans.next_state 
                 }
-                generateTranslation(lastTrans, lastTrans, dati, numOfEl, numOfStates, allM, conf+1);
+                generateTranslation(lastTrans, lastTrans, dati, alphEnc, numOfStates, allM, conf+1);
                 charToRead.current = 0;
                 setCell(1)
                 setActiveRead(input[charToRead.current] || '');
