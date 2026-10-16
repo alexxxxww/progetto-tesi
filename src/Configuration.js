@@ -4,7 +4,7 @@ var numOfConf;
 var confEncArray = [];
 var transaux = '';
 
-export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setBreakBool){
+export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
     const div = document.getElementById("write_here");
     const par = document.getElementById("write_here_trad");
     var curr = dati.machine.initial_state;
@@ -33,10 +33,9 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setB
         )
          
         div.innerHTML += ' &#8866; '
-        if(!trans && dati.machine.final_states !== curr){
+        if(!trans && dati.machine.final_state !== curr){
             div.innerHTML += ' transizione non trovata'
             par.innerHTML += '</br>transizione non trovata'
-            setBreakBool(true)
             break ciclo
         }
 
@@ -80,7 +79,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setB
         }
         par.innerHTML += `) (${statesEnc[curr]}))`  
 
-        if(dati.machine.final_states === curr){
+        if(dati.machine.final_state === curr){
             div.innerHTML += ' stringa accettata'
             break ciclo
         } 
@@ -209,7 +208,7 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
         = ${encoding[a]}${M.replaceAll('N', 'T').split(`a.a`)[1]}${s} k ${r}</br>
         →<sub>det</sub>T<sup>${values[1]}</sup><sub>${trans.current_state.split('_')[1]}</sub>${s} k ${r}</br>`
     
-    if(dati.machine.final_states === trans.current_state){
+    if(dati.machine.final_state === trans.current_state){
         N = `${lambda}u.${lambda}k.${lambda}v.k&lt;u,${overline}${trans.read}${closeOv}, v, ${overline}${trans.current_state}${closeOv}&gt;`
         translation += `=${N}${s} k ${r}</br>
             →k&lt;${Object.keys(encoding).join(' ')}&gt;</br>

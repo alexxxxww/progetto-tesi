@@ -32,8 +32,6 @@ function SimulateAndTranslate(){
     const timerRef = useRef(null);
     const transitionRef = useRef(null);
 
-    const [breakInterval, setBreakInterval] = useState(false)
-
     var allM = {};
 
     var numOfStates = dati.machine.set_of_states.length;
@@ -50,7 +48,7 @@ function SimulateAndTranslate(){
 
         setNodes(
             dati.machine.set_of_states.map((node, index) => {
-                const isFinal = dati.machine.final_states === node;
+                const isFinal = dati.machine.final_state === node;
                 const isInitial = dati.machine.initial_state === node;
 
                 return {
@@ -148,11 +146,6 @@ function SimulateAndTranslate(){
                 generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, conf);
             }
 
-            if(breakInterval){
-
-                breakInterval = false;
-            }
-
             if (nextTrans) {
                 setConf(prev => prev + 1)
                 setActiveRead(input[charToRead.current]);
@@ -235,11 +228,11 @@ function SimulateAndTranslate(){
                     <div className='col-6 vh-90' style={{flex: '1 1 0', display: 'flex', flexDirection: 'column', minHeight: 0}}>
                         <div className='row m-0 d-flex justify-content-center align-items-center' style={{flex: '0 0 20%', minHeight: 0}}>
                             <span className='col d-flex justify-content-around'>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="var(--text)" className="goButton bi bi-play-circle btnSvg" viewBox="0 0 16 16" onClick={()=>{setGo(true); setCell(2)}}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="var(--text)" className="goButton bi bi-play-circle btnSvg" viewBox="0 0 16 16" onClick={()=>{setGo(true); setCell(2)}}>
                                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                                     <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445"/>
                                 </svg>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="var(--text)" className="bi bi-fast-forward-circle btnSvg" viewBox="0 0 16 16" onClick={()=>{clearTimeout(timerRef.current); transitionRef.current?.()/*esegui la funzione contenuta in transitionRef se esiste*/}}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="var(--text)" className="bi bi-fast-forward-circle btnSvg" viewBox="0 0 16 16" onClick={()=>{clearTimeout(timerRef.current); transitionRef.current?.()/*esegui la funzione contenuta in transitionRef se esiste*/}}>
                                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                                     <path d="M4.271 5.055a.5.5 0 0 1 .52.038L8 7.386V5.5a.5.5 0 0 1 .79-.407l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 8 10.5V8.614l-3.21 2.293A.5.5 0 0 1 4 10.5v-5a.5.5 0 0 1 .271-.445"/>
                                 </svg>

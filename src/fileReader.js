@@ -44,7 +44,7 @@ export function text_extractor(file){
                         data.machine.alphabet = line[1].split(",");
                         data.machine.set_of_states = line[2].split(",");
                         data.machine.initial_state = line[3];
-                        data.machine.final_states = line[4].split(",");
+                        data.machine.final_state = line[4].split(",");
                     } else if(line[0] == 'transition'){
                         data.transitions.push({
                             current_state: line[5],
