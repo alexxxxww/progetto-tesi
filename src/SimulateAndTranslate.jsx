@@ -128,12 +128,14 @@ function SimulateAndTranslate(){
                 return;
             }
 
-            if(trans?.direction == 'R')
+            if(trans?.direction == 'R'){
                 setCell(prev => prev + 1);
-            else if(trans?.direction == 'L')
+                charToRead.current++;
+            }
+            else if(trans?.direction == 'L'){
                 setCell(prev => prev - 1)
-
-            charToRead.current++;
+                charToRead.current--;
+            }
             
             const nextTrans = dati.transitions.find(
                 (nextTrans) => nextTrans.current_state === trans.next_state && 
@@ -145,6 +147,7 @@ function SimulateAndTranslate(){
             } else {
                 generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, conf);
             }
+            console.log(trans)
 
             if (nextTrans) {
                 setConf(prev => prev + 1)
@@ -155,7 +158,7 @@ function SimulateAndTranslate(){
                     current_state: trans.next_state,
                     read: blank,
                     write: blank,
-                    direction: '-',
+                    direction: trans.direction,
                     next_state: trans.next_state 
                 }
                 generateTranslation(lastTrans, lastTrans, dati, alphEnc, numOfStates, allM, conf+1);

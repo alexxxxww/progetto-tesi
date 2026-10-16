@@ -33,6 +33,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
         )
          
         div.innerHTML += ' &#8866; '
+
         if(!trans && dati.machine.final_state !== curr){
             div.innerHTML += ' transizione non trovata'
             par.innerHTML += '</br>transizione non trovata'
@@ -48,6 +49,11 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
 
         let fakeArray = [...inputArray];
         
+        if(trans?.next_state){
+            fakeArray.splice(i, 0, trans?.next_state)
+            div.innerHTML += `${fakeArray.join('')}`
+        }
+
         numOfConf++;
 
         //gestire caso direzione L
@@ -57,7 +63,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
             ReverseString = [...ReverseString, beforeHead[n]]
         }
 
-        var conf = `<span style='border-top:1px solid black'>C<sub>${numOfConf}</sub></span> = <span style='text-decoration:overline; display:inline'>("${beforeHead == '' ? epsilon : beforeHead}","${trans ? fakeArray[i-1] : blank}","${fakeArray.slice(i).join('') || epsilon}","${curr}")</span> = `
+        var conf = `<span style='border-top:1px solid black'>C<sub>${numOfConf}</sub></span> = <span style='text-decoration:overline; display:inline'>("${beforeHead == '' ? epsilon : beforeHead}","${trans ? fakeArray[i-1] : blank}","${fakeArray.slice(i+1).join('') || epsilon}","${curr}")</span> = `
 
         par.innerHTML += `<br/>${conf} &#955;x.(x`
         if(ReverseString.join('') == '')
@@ -69,13 +75,13 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
 
         par.innerHTML += `) (${alphEnc[fakeArray[i-1]] ?? alphEnc[blank]}`;
 
-        if(!fakeArray.slice(i).join(''))
+        if(!fakeArray.slice(i+1).join(''))
             par.innerHTML += `) (${alphEnc[epsilon]}`;
-        else if(fakeArray.slice(i).join('').length == 1)
-            par.innerHTML += `) (${alphEnc[fakeArray.slice(i).join('')]}`
+        else if(fakeArray.slice(i+1).join('').length == 1)
+            par.innerHTML += `) (${alphEnc[fakeArray.slice(i+1).join('')]}`
         else{
             par.innerHTML += ') ('
-            translateString(fakeArray.slice(i).join(''), par);
+            translateString(fakeArray.slice(i+1).join(''), par);
         }
         par.innerHTML += `) (${statesEnc[curr]}))`  
 
@@ -83,10 +89,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
             div.innerHTML += ' stringa accettata'
             break ciclo
         } 
-
-        fakeArray.splice(i, 0, trans?.next_state || curr)
-        div.innerHTML += `${fakeArray.join('')}`
-
+        
         curr = trans.next_state;
     } 
     genConfArray();
@@ -214,7 +217,7 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
             →k&lt;${Object.keys(encoding).join(' ')}&gt;</br>
             =k${confTrans.index}</br>
             =k${C}`
-    } else if(trans.direction === '-'){//la testina resta ferma: da implementare
+    } else if(trans.direction === '-'){
         N = `${lambda}u.${lambda}k.${lambda}v.xk&lt;u,${overline}${trans.write}${closeOv}, v, ${overline}${trans.next_state}${closeOv}&gt;`
         let Nrplc = N.replaceAll('x', `{${lambda}z.transz}`)
         translation += `= (${Nrplc})${s}k${r}</br>
