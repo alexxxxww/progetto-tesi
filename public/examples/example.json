@@ -3,7 +3,7 @@
         "alphabet": ["a", "b"],
         "set_of_states": ["q_0", "q_1", "q_2", "q_3"],
         "initial_state": "q_0",
-        "final_states": ["q_2"]
+        "final_states": "q_2"
     },
     "transitions": [
         {

@@ -29,6 +29,11 @@ function SimulateAndTranslate(){
     const container = useRef();
     const containerTranslate = useRef();
 
+    const timerRef = useRef(null);
+    const transitionRef = useRef(null);
+
+    const [breakInterval, setBreakInterval] = useState(false)
+
     var allM = {};
 
     var numOfStates = dati.machine.set_of_states.length;
@@ -36,8 +41,6 @@ function SimulateAndTranslate(){
 
     useEffect(() => {
         if (!dati || !input) return;
-
-        console.log(dati)
 
         setActiveState(dati.machine?.initial_state || '');
         setActiveRead(input[charToRead.current] || '');
@@ -47,8 +50,8 @@ function SimulateAndTranslate(){
 
         setNodes(
             dati.machine.set_of_states.map((node, index) => {
-                const isFinal = dati.machine.final_states.includes(node);
-                const isInitial = dati.machine.initial_state.includes(node);
+                const isFinal = dati.machine.final_states === node;
+                const isInitial = dati.machine.initial_state === node;
 
                 return {
                 id: node,
@@ -100,13 +103,32 @@ function SimulateAndTranslate(){
 
         if(conf === 1){
             pre_trans(allM)
+            const firstTrans = {
+                current_state: dati.machine.initial_state,
+                read: blank,
+                write: blank,
+                direction: 'R',
+                next_state: dati.machine.initial_state 
+            }
+            const secTrans = dati.transitions.find(
+                (trans) => trans.current_state === dati.machine.initial_state && trans.read === input[0] 
+            );
+            generateTranslation(firstTrans, secTrans, dati, alphEnc, numOfStates, allM, 0);
         }
 
-        const timer = setTimeout(() => { 
+        let executed = false;
+
+        const executeTransition = () => { 
+            if (executed) return;
+            executed = true;
+
             const trans = dati.transitions.find(
                 (trans) => trans.current_state === activeState && trans.read === activeRead 
             );
-            if(!trans) return;
+            if(!trans){
+                setGo(false)
+                return;
+            }
 
             if(trans?.direction == 'R')
                 setCell(prev => prev + 1);
@@ -124,6 +146,11 @@ function SimulateAndTranslate(){
                 generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, 1);
             } else {
                 generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, conf);
+            }
+
+            if(breakInterval){
+
+                breakInterval = false;
             }
 
             if (nextTrans) {
@@ -147,9 +174,13 @@ function SimulateAndTranslate(){
                 setGo(false)
                 return;
             } 
-        }, 4100);
+        }
 
-        return ()=> clearTimeout(timer);
+        //prima di programmare il timer assegno la funzione a transitionRef
+        transitionRef.current = executeTransition;
+        timerRef.current = setTimeout(executeTransition, 4100);
+
+        return ()=> clearTimeout(timerRef.current);
     }, [dati, activeRead, activeState, go])
     
     const labels = {}
@@ -203,10 +234,16 @@ function SimulateAndTranslate(){
                 <div className='row m-0' style={{height: '90vh', width: '100%', flexWrap: 'nowrap'}} >
                     <div className='col-6 vh-90' style={{flex: '1 1 0', display: 'flex', flexDirection: 'column', minHeight: 0}}>
                         <div className='row m-0 d-flex justify-content-center align-items-center' style={{flex: '0 0 20%', minHeight: 0}}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#ff0073" className="goButton col bi bi-play-circle" viewBox="0 0 16 16" onClick={()=>{setGo(true); setCell(2)}}>
-                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                                <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445"/>
-                            </svg>
+                            <span className='col d-flex justify-content-around'>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="var(--text)" className="goButton bi bi-play-circle btnSvg" viewBox="0 0 16 16" onClick={()=>{setGo(true); setCell(2)}}>
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445"/>
+                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="var(--text)" className="bi bi-fast-forward-circle btnSvg" viewBox="0 0 16 16" onClick={()=>{clearTimeout(timerRef.current); transitionRef.current?.()/*esegui la funzione contenuta in transitionRef se esiste*/}}>
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path d="M4.271 5.055a.5.5 0 0 1 .52.038L8 7.386V5.5a.5.5 0 0 1 .79-.407l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 8 10.5V8.614l-3.21 2.293A.5.5 0 0 1 4 10.5v-5a.5.5 0 0 1 .271-.445"/>
+                                </svg>
+                            </span>
                             <div id='tape' className='col fs-3 d-flex justify-content-center align-items-center' style={{borderCollapse:'collapse'}}></div>
                         </div>
                         <div style={{flex: '0 0 80%', minHeight: 0}}>

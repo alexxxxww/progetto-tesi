@@ -4,8 +4,8 @@
     color: #637a84;
 }
 
-svg.goButton:active{
-    fill:grey
+.btnSvg:active{
+    transform: scale(0.95);
 }
 
 #scrollMessage{
