@@ -24,6 +24,7 @@ function SimulateAndTranslate(){
     const [cell, setCell] = useState(1)
     const [overflow, setOverflow] = useState()
     const [conf, setConf] = useState(1);
+    const [tape, setTape] = useState( ['...', `&#9633;`, ...input?.split(''), `&#9633;`, '...'])
 
     const charToRead = useRef(0)
     const container = useRef();
@@ -70,11 +71,12 @@ function SimulateAndTranslate(){
     }, [dati, input]);
 
     useEffect(()=>{
-        if(input && cell){
-            generateTape(input);
+        if(tape && cell){
+            generateTape(tape);
             animation(1);
+            console.log(tape)
         }
-    }, [dati, input])
+    }, [dati, tape])
 
     useEffect(()=> {
         animation(cell)
@@ -127,6 +129,12 @@ function SimulateAndTranslate(){
                 setGo(false)
                 return;
             }
+
+            setTape(prev => {
+                const newTape = [...prev];
+                newTape[cell] = trans.write;
+                return newTape;
+            });
 
             if(trans?.direction == 'R'){
                 setCell(prev => prev + 1);

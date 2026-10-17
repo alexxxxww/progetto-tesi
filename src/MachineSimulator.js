@@ -1,15 +1,9 @@
 export function generateTape(input){
     const tape = document.getElementById("tape");
-    
-    let inputArray = input.split('')
-    inputArray.splice(0, 0, `&#9633;`)
-    inputArray.splice(inputArray.length, 0, `&#9633;`)
-    inputArray.splice(0, 0, `...`)
-    inputArray.splice(inputArray.length, 0, `...`)
 
     let i = 0;
     let htmlContent = '';
-    inputArray.forEach(el => {
+    input.forEach(el => {
         htmlContent += `<p id='el-${i}' style='display:inline;border:1px solid black;padding: 5px'>${el}</p>`
         i++;
     })
