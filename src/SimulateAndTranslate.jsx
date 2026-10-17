@@ -24,7 +24,8 @@ function SimulateAndTranslate(){
     const [cell, setCell] = useState(1)
     const [overflow, setOverflow] = useState()
     const [conf, setConf] = useState(1);
-    const [tape, setTape] = useState( ['...', `&#9633;`, ...input?.split(''), `&#9633;`, '...'])
+    const [inputArr, setInputArr] = useState(input || '')
+    const [tape, setTape] = useState( ['...', `&#9633;`, ...inputArr.split(''), `&#9633;`, '...'])
 
     const charToRead = useRef(0)
     const container = useRef();
@@ -42,10 +43,10 @@ function SimulateAndTranslate(){
         if (!dati || !input) return;
 
         setActiveState(dati.machine?.initial_state || '');
-        setActiveRead(input[charToRead.current] || '');
+        setActiveRead(inputArr[charToRead.current] || '');
 
-        translator(dati, input, alphEnc, statesEnc);
-        generateConfigurationsTree(dati, input, alphEnc, statesEnc);
+        translator(dati, inputArr, alphEnc, statesEnc);
+        generateConfigurationsTree(dati, inputArr, alphEnc, statesEnc);
 
         setNodes(
             dati.machine.set_of_states.map((node, index) => {
@@ -69,6 +70,10 @@ function SimulateAndTranslate(){
             }})
         );
     }, [dati, input]);
+
+    useEffect(()=>{
+        setTape(['...', `&#9633;`, ...inputArr.split(''), `&#9633;`, '...'])
+    }, [inputArr])
 
     useEffect(()=>{
         if(tape && cell){
@@ -111,9 +116,9 @@ function SimulateAndTranslate(){
                 next_state: dati.machine.initial_state 
             }
             const secTrans = dati.transitions.find(
-                (trans) => trans.current_state === dati.machine.initial_state && trans.read === input[0] 
+                (trans) => trans.current_state === dati.machine.initial_state && trans.read === inputArr[0] 
             );
-            generateTranslation(firstTrans, secTrans, dati, alphEnc, numOfStates, allM, 0);
+            generateTranslation(firstTrans, secTrans, dati, alphEnc, numOfStates, allM, 0, tape);
         }
 
         let executed = false;
@@ -144,22 +149,21 @@ function SimulateAndTranslate(){
                 setCell(prev => prev - 1)
                 charToRead.current--;
             }
-            
+
             const nextTrans = dati.transitions.find(
                 (nextTrans) => nextTrans.current_state === trans.next_state && 
-                nextTrans.read === input[charToRead.current]
+                nextTrans.read === inputArr[charToRead.current]
             );
 
             if(conf === 1) {
-                generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, 1);
+                generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, 1, tape);
             } else {
-                generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, conf);
+                generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, conf, tape);
             }
-            console.log(trans)
 
             if (nextTrans) {
                 setConf(prev => prev + 1)
-                setActiveRead(input[charToRead.current]);
+                setActiveRead(inputArr[charToRead.current]);
                 setActiveState(nextTrans.current_state);
             } else {
                 const lastTrans = {
@@ -169,10 +173,10 @@ function SimulateAndTranslate(){
                     direction: trans.direction,
                     next_state: trans.next_state 
                 }
-                generateTranslation(lastTrans, lastTrans, dati, alphEnc, numOfStates, allM, conf+1);
+                generateTranslation(lastTrans, lastTrans, dati, alphEnc, numOfStates, allM, conf+1, tape);
                 charToRead.current = 0;
                 setCell(1)
-                setActiveRead(input[charToRead.current] || '');
+                setActiveRead(inputArr[charToRead.current] || '');
                 setActiveState(dati.machine?.initial_state || '');
                 setConf(1)
                 setGo(false)

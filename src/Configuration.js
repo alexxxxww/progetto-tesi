@@ -4,7 +4,7 @@ var numOfConf;
 var confEncArray = [];
 var transaux = '';
 
-export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
+export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, tape){
     const div = document.getElementById("write_here");
     const par = document.getElementById("write_here_trad");
     var curr = dati.machine.initial_state;
@@ -13,82 +13,93 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc){
     
     let fakeArray = [...inputArray];
     fakeArray.splice(i, 0, curr);
-    div.innerHTML = fakeArray.join('')
+
+    div.innerHTML = '';
 
     numOfConf = 0;
 
+    //traduzione prima configurazione
     par.innerHTML += '</br>encoding of configurations:'
     let blank = `&#9633;`
-    let epsilon = `&epsilon;`
+    let epsilon = `&#949;`
     let init = `<span style = 'border-top: 1px solid black'>C<sub>${numOfConf}</sub></span> = <span style='text-decoration:overline; display:inline'>("${epsilon}", "${blank}", "${fakeArray.slice(1).join('')}","${curr}")</span> = `
     let initEnc = `&#955;x.(x(${alphEnc[epsilon]}) (${alphEnc[blank]}) (`;
     par.innerHTML += `<br/>${init + initEnc}`
     translateString(fakeArray.slice(1).join(''), par)
     par.innerHTML += `) (${statesEnc[curr]}))`
 
+    var pre_write = '';
+
     ciclo: //label
     while(true){
         const trans = dati.transitions.find(
             t => (t.current_state == curr && t.read == inputArray[i])
         )
-         
-        div.innerHTML += ' &#8866; '
 
         if(!trans && dati.machine.final_state !== curr){
             div.innerHTML += ' transizione non trovata'
             par.innerHTML += '</br>transizione non trovata'
             break ciclo
         }
-
-        if(!trans) i++
-
-        if(trans?.direction == 'R')
-            i++;//i = posizione testina
-        else if(trans?.direction == 'L')
-            i--
-
-        let fakeArray = [...inputArray];
         
-        if(trans?.next_state){
-            fakeArray.splice(i, 0, trans?.next_state)
-            div.innerHTML += `${fakeArray.join('')}`
-        }
+        let fakeArray = [...inputArray];
+        if(pre_write !== '') fakeArray[i-1] = pre_write
+
+        pre_write = trans?.write
+
+        fakeArray.splice(i, 0, curr)
+        div.innerHTML += `${fakeArray.join('')}`
+        div.innerHTML += ' &#8866; '
 
         numOfConf++;
 
         //gestire caso direzione L
         var ReverseString = [];
-        var beforeHead = fakeArray.slice(0, i - 1).join('')
+        var beforeHead = i > 0 ? fakeArray.slice(0, i).join('') : epsilon
+        var afterHead = i < fakeArray.length - 2 ? fakeArray.slice(i+2).join('') : epsilon
+        var head = i < fakeArray.length - 1 ? fakeArray[i+1] : blank
+        var state = fakeArray[i]
+
+
         for(let n = i-1; n >= 0; n--){
             ReverseString = [...ReverseString, beforeHead[n]]
         }
 
-        var conf = `<span style='border-top:1px solid black'>C<sub>${numOfConf}</sub></span> = <span style='text-decoration:overline; display:inline'>("${beforeHead == '' ? epsilon : beforeHead}","${trans ? fakeArray[i-1] : blank}","${fakeArray.slice(i+1).join('') || epsilon}","${curr}")</span> = `
+        var conf = `<span style='border-top:1px solid black'>C<sub>${numOfConf}</sub></span> = <span style='text-decoration:overline; display:inline'>("${beforeHead}","${head}","${afterHead}","${state}")</span> = `
 
         par.innerHTML += `<br/>${conf} &#955;x.(x`
-        if(ReverseString.join('') == '')
+        if(beforeHead == epsilon){
             par.innerHTML += `(${alphEnc[epsilon]}`;
-        else if(ReverseString.join('').length == 1)
-            par.innerHTML += `(${alphEnc[ReverseString.join('')]}`;
-        else
-            translateString(ReverseString.join(''), par);
+        }else if(beforeHead.length == 1)
+            par.innerHTML += `(${alphEnc[beforeHead]}`;
+        else if(beforeHead.length > 1)
+            translateString(beforeHead.split('').reverse().join(''), par);
 
-        par.innerHTML += `) (${alphEnc[fakeArray[i-1]] ?? alphEnc[blank]}`;
+        par.innerHTML += `) (${alphEnc[head]}`;
 
-        if(!fakeArray.slice(i+1).join(''))
-            par.innerHTML += `) (${alphEnc[epsilon]}`;
-        else if(fakeArray.slice(i+1).join('').length == 1)
-            par.innerHTML += `) (${alphEnc[fakeArray.slice(i+1).join('')]}`
-        else{
+        if(afterHead == epsilon){
+            par.innerHTML += `) (${alphEnc[epsilon]}`
+        } else if(afterHead.length == 1)
+            par.innerHTML += `) (${alphEnc[afterHead]}`
+        else if(afterHead.length > 1){
             par.innerHTML += ') ('
-            translateString(fakeArray.slice(i+1).join(''), par);
+            translateString(afterHead.split('').reverse().join(''), par);
         }
-        par.innerHTML += `) (${statesEnc[curr]}))`  
+        par.innerHTML += `) (${statesEnc[state]}))`  
 
         if(dati.machine.final_state === curr){
             div.innerHTML += ' stringa accettata'
             break ciclo
         } 
+        
+        if(!trans) i++
+
+        if(trans?.direction == 'R'){
+            i++;//posizione testina
+        }
+        else if(trans?.direction == 'L'){
+            i--
+        }
         
         curr = trans.next_state;
     } 

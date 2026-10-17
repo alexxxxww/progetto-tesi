@@ -30,7 +30,7 @@
         {
             "current_state": "q_1",
             "read": "b",
-            "write": "a",
+            "write": "b",
             "direction": "R",
             "next_state": "q_2"
         }

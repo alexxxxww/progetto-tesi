@@ -11,7 +11,7 @@ export function translator(dati, input, alphEnc, statesEnc){
     par.innerHTML = `<strong>ENCODING IN LAMBDA CALCULUS</strong></br>`;
 
     //codifica alfabeto
-    const alphabet = [...dati.machine.alphabet, `&#9633;`, `&epsilon;`];//array
+    const alphabet = [...dati.machine.alphabet, `&#9633;`, `&#949;`];//array
 
     par.innerHTML += `<br/>ENCODING OF THE ALPHABET</br>`;
     alphabet.forEach(symbol => {
