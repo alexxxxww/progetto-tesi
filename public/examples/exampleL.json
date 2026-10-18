@@ -16,7 +16,7 @@
         {
             "current_state": "q_0",
             "read": "b",
-            "write": "b",
+            "write": "a",
             "direction": "R",
             "next_state": "q_3"
         },

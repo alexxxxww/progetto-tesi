@@ -4,13 +4,14 @@ var numOfConf;
 var confEncArray = [];
 var transaux = '';
 
-export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, tape){
+export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setAcceptedString){
     const div = document.getElementById("write_here");
     const par = document.getElementById("write_here_trad");
     var curr = dati.machine.initial_state;
     var inputArray = input.split('');
     var i = 0;
     
+    let plchldFakeArray = [...inputArray]
     let fakeArray = [...inputArray];
     fakeArray.splice(i, 0, curr);
 
@@ -33,18 +34,18 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, tape
     ciclo: //label
     while(true){
         const trans = dati.transitions.find(
-            t => (t.current_state == curr && t.read == inputArray[i])
+            t => (t.current_state == curr && t.read == plchldFakeArray[i])
         )
 
-        if(!trans && dati.machine.final_state !== curr){
+        /*if(!trans && dati.machine.final_state !== curr){
             div.innerHTML += ' transizione non trovata'
             par.innerHTML += '</br>transizione non trovata'
             break ciclo
-        }
-        
-        let fakeArray = [...inputArray];
-        if(pre_write !== '') fakeArray[i-1] = pre_write
+        }*/
 
+        if(pre_write !== '') plchldFakeArray[i-1] = pre_write
+        let fakeArray = [...plchldFakeArray];
+        plchldFakeArray = [...fakeArray]
         pre_write = trans?.write
 
         fakeArray.splice(i, 0, curr)
@@ -59,7 +60,6 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, tape
         var afterHead = i < fakeArray.length - 2 ? fakeArray.slice(i+2).join('') : epsilon
         var head = i < fakeArray.length - 1 ? fakeArray[i+1] : blank
         var state = fakeArray[i]
-
 
         for(let n = i-1; n >= 0; n--){
             ReverseString = [...ReverseString, beforeHead[n]]
@@ -88,9 +88,15 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, tape
         par.innerHTML += `) (${statesEnc[state]}))`  
 
         if(dati.machine.final_state === curr){
+            setAcceptedString(true)
             div.innerHTML += ' stringa accettata'
             break ciclo
         } 
+        if(!trans && dati.machine.final_state !== curr){
+            div.innerHTML += ' transizione non trovata'
+            par.innerHTML += '</br>transizione non trovata'
+            break ciclo
+        }
         
         if(!trans) i++
 
@@ -107,6 +113,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, tape
 }
 
 function genConfArray(){
+    confEncArray = []
     const par_trad = document.getElementById("write_here_trad");
     /* creating array with configurations encoding */
     let text = par_trad.innerHTML.split(`encoding of configurations:`)[1]
@@ -140,6 +147,7 @@ export function pre_trans(allM){
     par.innerHTML = `Q<sub>i</sub> := M<sub>i</sub>{x ← ${lambda}z.transz}</br>
         T<sub>i</sub><sup>j</sup> := N<sub>i</sub><sup>j</sup>{x ← ${lambda}z.transz}</br>
         V<sub>i</sub> := R<sub>i</sub>{x ← ${lambda}z.transz}</br>
+        U<sub>i</sub> := P<sub>i</sub>{x ← ${lambda}z.transz}</br>
         transaux := ${transaux}</br></br>`
 }
 
@@ -166,7 +174,7 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
     let R = '';
 
     let l = trans.next_state.split('_')[1]
-    let h = trans.read || blank
+    let h = trans.write || blank
     let i = nextTrans?.read || blank
 
     const confTrans = confEncArray.find(
@@ -188,21 +196,29 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
         for(let n = sEl.length; n >= 0 ; n--){
             sRevArray = [...sRevArray, sEl[n]]
     }
+
+    let encodingKeys = []
     //s
     let s = `${overline}${sRevArray.join('')}${closeOv}`
     encoding[s] = `${confTrans.conf.split('(x')[1].split(' ')[0]}`
+    encodingKeys.push(s)
 
     let sNotRev = values[0]
 
     //a
     let a = `${overline}${values[1]}${closeOv}`
     encoding[a] = `${confTrans.conf.split(') ')[1]})`
+    encodingKeys.push(a)
+
     //r
     let r = `${overline}${values[2]}${closeOv}`
     encoding[r] = `${confTrans.conf.split(') ')[2]})`
+    encodingKeys.push(r)
+
     //q
     let q = `${overline}${values[3]}${closeOv}`
     encoding[q] = `${confTrans.conf.split(') ')[3].split('))')[0]})`
+    encodingKeys.push(q)
 
     let translation = '';
     translation += `transk${C} = ${theta}transauxk${C}</br>
@@ -212,8 +228,8 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
         →<sub>det</sub>${C}(${lambda}u.${lambda}a.${lambda}v.${lambda}q.((q${Object.keys(allM).join('')}){x ← ${lambda}z.transz}aukv))</br>
         = ${C}${placeholder}</br>
         = ${confTrans.index}${placeholder}</br>
-        = (${lambda}x.(x${Object.keys(encoding).join(' ')}))${placeholder}</br>
-        →<sub>det</sub>${placeholder}${Object.keys(encoding).join(' ')}</br>
+        = (${lambda}x.(x${encodingKeys.join(' ')}))${placeholder}</br>
+        →<sub>det</sub>${placeholder}${encodingKeys.join(' ')}</br>
         →<sub>det</sub>${q}${Q}${a} ${s}k${r}</br>
         = ${encoding[q]}${Q}${a} ${s}k${r}</br>
         →<sub>det</sub><span style='color:var(--orange)'>Q<sub>${trans.current_state.split('_')[1]}</sub></span>${a} ${s}k${r}</br>
@@ -225,7 +241,7 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
     if(dati.machine.final_state === trans.current_state){
         N = `${lambda}u.${lambda}k.${lambda}v.k&lt;u,${overline}${trans.read}${closeOv}, v, ${overline}${trans.current_state}${closeOv}&gt;`
         translation += `=${N}${s} k ${r}</br>
-            →k&lt;${Object.keys(encoding).join(' ')}&gt;</br>
+            →k&lt;${encodingKeys.join(' ')}&gt;</br>
             =k${confTrans.index}</br>
             =k${C}`
     } else if(trans.direction === '-'){
@@ -237,36 +253,69 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
             = transk${overline}C<sub>${nConf+1}</sub>${closeOv}</br>`
     } else if(trans.direction === 'L') {
         N = `${lambda}u.u`
+
         for(let j = 0; j < numOfElBlank; j++){
-            if(AlphBlank[j] === blank)
+            if(AlphBlank[j] === blank){
                 N += `P<sup>${l}, ${h}</sup>`
-            else
+            }else{
                 N += `P<sup>${l}, ${h}</sup><sub>${AlphBlank[j]}</sub>`
+            }
         }
-        if(i === blank)
-            P = `${lambda}k.append<sup>${h}</sup>(${lambda}w.xk&lt;${overline}${epsilon}${closeOv}, ${overline}${i}${closeOv}, w, ${overline}${trans.next_state}${closeOv}&gt;)`
-        else
-            P = `${lambda}u.${lambda}k.append<sup>${h}</sup>(${lambda}w.xk&lt;u, ${overline}${i}${closeOv}, w, ${overline}${trans.next_state}${closeOv}&gt;)`//implementare append
-        translation += `...`
+
+        let sRev = values[0].split('').reverse().join('')
+        let sRevOv = `${overline}${sRev}${closeOv}`
+        let P_abb = '';
+        let a_p = sRev.split('')[0]
+        let pRev = sRev.split('').slice(1).length > 0 ? sRev.split('').slice(1) : epsilon
+
+        if(s === blank){
+            P = `${lambda}k.append<sup>${h}</sup>(${lambda}w.xk&lt;${overline}${epsilon}${closeOv}, ${overline}${s}${closeOv}, w, ${overline}${trans.next_state}${closeOv}&gt;)`
+            P_abb = `P<sup>${l}, ${h}</sup>`
+        }else{
+            P = `${lambda}u.${lambda}k.append<sup>${h}</sup>(${lambda}w.xk&lt;u, ${overline}${s}${closeOv}, w, ${overline}${trans.next_state}${closeOv}&gt;)`//implementare append
+            P_abb = `P<sup>${l}, ${h}</sup><sub>${a_p}</sub>`
+        }
+
+        let Nrplc = N.replaceAll('P', 'U')
+        let plhold = P.replace('x', `(${lambda}z.transz)`)
+
+        translation += `= (${N}{x ← ${lambda}z.transz})${sRevOv}k${r}</br>
+            = (${Nrplc})${sRevOv}k${r}</br>
+            →<sub>det</sub> ${Nrplc.split('u.')[1].replace('u', `${sRevOv}`)}k${r}</br>`
+        if(values[0] == 'ε'){
+            translation += `= ${encoding[s]}${Nrplc.split('u.u')[1]}k${r}</br>
+                →<sub>det</sub> U<sup>${l}, ${h}</sup>k${r}</br>
+                = (${plhold})k${r}</br>
+                →<sub>det</sub> ${plhold.split('k.')[1].split('))')[0]})${r}</br>
+                →<sub>det</sub> ${plhold.split('</sup>')[1]}${overline}(${h}${r})${closeOv}</br>
+                = ${plhold.split(`w.`)[1].replace('w', `${overline}(${h}${r})${closeOv}`).split(`&gt;)`)}&gt;</br>
+                = (${lambda}z.transz)k${overline}(ε, ${blank}, ${overline}(${h}${r})${closeOv}, q_${l})${closeOv}`
+        } else { 
+            translation += `= ${overline}${a_p}${closeOv} ${overline}${pRev}${closeOv}${Nrplc.split('u.u')[1]}k${r}</br>
+                = (${alphEnc[a_p]}${overline}${pRev}${closeOv})${Nrplc.split('u.u')[1]}k${r}</br>
+                →<sub>det</sub> ${P_abb.replace('P', 'U')}${overline}${pRev}${closeOv}k${r}</br>
+                = (${plhold})${overline}${pRev}${closeOv}k${r}</br>
+                →<sub>det</sub> ${plhold.split(`${lambda}k.`)[1].replace('u,', `${overline}${pRev}${closeOv}, `)}${r}</br>
+                →<sub>det</sub> ${plhold.split(`</sup>`)[1].replace('u,', `${overline}${pRev}${closeOv}, `)}${overline}(${h}${r})${closeOv}</br>
+                →<sub>det</sub> ${plhold.split(`w.`)[1].replace('u,', `${overline}${pRev}${closeOv}, `).replace('w', `${overline}(${h}${r})${closeOv}`).split('&gt;)')[0]}&gt;</br>
+                = (${lambda}z.transz)k${overline}(${pRev !== epsilon ? pRev.split('').reverse().join('') : epsilon}, ${a_p}, ${h !== blank ? h : blank}${r}, q_${l})${closeOv}</br>`
+        }
+        translation += `= (${lambda}z.transz)k${overline}C<sub>${nConf+1}</sub>${closeOv}</br>
+                →<sub>det</sub> transk${overline}C<sub>${nConf+1}</sub>${closeOv}</br>`
     } else if(trans.direction == 'R'){
         N = `${lambda}u.${lambda}k.${lambda}v.v`
         for(let j = 0; j < numOfElBlank; j++){
             if(AlphBlank[j] === blank){
-                //if(trans.direction === 'R')
-                    N += `R`
-                /*else if(trans.direction === 'L')
-                    N += `L`*/
+                N += `R`
                 N += `<sup>${l}, ${h}</sup>`
             } else {
-                //if(trans.direction === 'R')
-                    N += `R`
-                /*else if(trans.direction === 'L')
-                    N += `L`*/
+                N += `R`
                 N += `<sup>${l}, ${h}</sup><sub>${AlphBlank[j]}</sub>`
             }
         }
         N += `ku`
-        let a_p = values[0] == 'ε' ? r.split('>')[1][0] : blank
+        let a_p = values[2] == 'ε' ? blank : r.split('>')[1][0] 
+        
         let R_abb = ''
         if(i === blank){
             R = `${lambda}k.append<sup>${h}</sup>(${lambda}w.xk&lt;w, ${overline}${i}${closeOv}, ${overline}${epsilon}${closeOv}, ${overline}${trans.next_state}${closeOv}&gt;)`
@@ -294,11 +343,11 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
                 →<sub>det</sub>${R_abb.replace('R', 'V')}${overline}${rplcU}${closeOv}k${s}</br>
                 = ${plhold}${overline}${rplcU}${closeOv}k${s}</br>
                 →<sub>det</sub>${plhold.split(`${lambda}k.`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `)}${s}</br>
-                →<sub>det</sub>${plhold.split(`</sup>`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `)}${overline}(${a}${s})${closeOv}</br>
-                →<sub>det</sub>${plhold.split(`w.`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `).replace('w', `${overline}(${a}${s})${closeOv}`).split('&gt;)')[0]}&gt;</br>
-                →<sub>det</sub>transk${plhold.split(`)k`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `).replace('w', `${overline}(${a}${values[0] !== 'ε' ? s : ""})${closeOv}`).split('&gt;)')[0]}&gt;</br>`
+                →<sub>det</sub>${plhold.split(`</sup>`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `)}${overline}(${h}${s})${closeOv}</br>
+                →<sub>det</sub>${plhold.split(`w.`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `).replace('w', `${overline}(${h}${s})${closeOv}`).split('&gt;)')[0]}&gt;</br>
+                →<sub>det</sub>transk${plhold.split(`)k`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `).replace('w', `${overline}(${h}${values[0] !== 'ε' ? s : ""})${closeOv}`).split('&gt;)')[0]}&gt;</br>`
         }
-        translation += `= transk${overline}(${values[0] !== 'ε' ? sNotRev : ""}${h !== blank ? a : 'ε'}, ${a_p}, ${rplcU}, q_${l})${closeOv}</br>
+        translation += `= transk${overline}(${values[0] !== 'ε' ? sNotRev : ""}${h !== blank ? h : 'ε'}, ${a_p}, ${rplcU}, q_${l})${closeOv}</br>
                 = transk${overline}C<sub>${nConf+1}</sub>${closeOv}</br>`
     }
     

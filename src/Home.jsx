@@ -103,7 +103,7 @@ function Home(){
                                                     <p className="mb-0 fw-bold">Release the file here...</p>
                                                 ) : (
                                                 <p className="mb-0">
-                                                    {file ? `Selected file: ${file.name}` : "Drag your .csv or .json file here, or click to search for it"}
+                                                    {file ? `Selected file: ${file.name}` : "Click here to search for the right .csv or .json file"}
                                                 </p>
                                             )}
                                         </div>
