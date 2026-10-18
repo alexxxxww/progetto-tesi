@@ -1,5 +1,5 @@
 information_type,alphabet,set_of_states,initial_state,final_state,current_state,read,write,direction,next_state
-machine,"a,b", "q_0,q_1,q_2,q_3",q_0,"q_2",,,,,,
+machine,"a,b", "q_0,q_1,q_2,q_3",q_0,q_2,,,,,,
 transition,,,,,q_0,a,a,R,q_1
 transition,,,,,q_0,b,b,R,q_3
 transition,,,,,q_3,a,a,R,q_1

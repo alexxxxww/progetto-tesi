@@ -20,6 +20,7 @@
     color: #666666;
     opacity: 0.4;
     cursor: not-allowed;
+    pointer-events: none;
 }
 
 input[type="file"]::-webkit-file-upload-button {
@@ -47,4 +48,15 @@ input[type="file"]::-webkit-file-upload-button {
 
 .colPar{
     color: var(--olive-dark)
+}
+
+.btnPers{
+    background-color: rgba(255, 255, 255, 0.129);
+    backdrop-filter:blur(5px);
+    color:white;
+}
+
+.modal-content{
+    background-color: rgba(94, 92, 92, 0.538);
+    backdrop-filter: blur(5px);
 }

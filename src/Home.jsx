@@ -171,24 +171,20 @@ function Home(){
                         </form>
                         <div className="modal fade" id="modalEx" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog modal-lg">
-                            <div className="modal-content">
-                                <div className="modal-header">
-                                    <h1 className="modal-title" id="exampleModalLabel">See Examples</h1>
-                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <div className="modal-content border text-white">
+                                <div className="modal-header border">
+                                    <h1 className="modal-title fs-5" id="exampleModalLabel">See Examples</h1>
+                                    <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div className="modal-body">
                                     <div className='row'>
-                                        <p className="col" onClick={()=>setExToOpen(1)}>See example for JSON file</p>
-                                        <p className="col" onClick={()=>setExToOpen(0)}>See example for CSV file</p>
+                                        <p className="col btnPers border m-2 p-2 rounded text-center" onClick={()=>setExToOpen(1)}>See example for JSON file</p>
+                                        <p className="col btnPers border m-2 p-2 rounded text-center" onClick={()=>setExToOpen(0)}>See example for CSV file</p>
                                     </div>
                                 
                                     <pre style={{ whiteSpace: 'pre-wrap', textAlign: 'left' }}>
                                         {exampleContent || "Loading..."}
                                     </pre>
-                                </div>
-                                <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" className="btn btn-primary">Save changes</button>
                                 </div>
                                 </div>
                             </div>
