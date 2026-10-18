@@ -14,6 +14,14 @@
     color: var(--olive-dark);
 }
 
+.disableButton{
+    background-color: #cccccc;
+    border-color: #666666;
+    color: #666666;
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 input[type="file"]::-webkit-file-upload-button {
     background-color: white;
     border-color: white;
@@ -31,4 +39,12 @@ input[type="file"]::-webkit-file-upload-button {
     color: var(--olive);
     top: -10px;
     left: -10px;
+}
+
+.notDet{
+    color: var(--olive-dark)
+}
+
+.colPar{
+    color: var(--olive-dark)
 }

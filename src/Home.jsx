@@ -1,6 +1,6 @@
 import './Home.css';
 import { text_extractor } from './fileReader';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useOutletContext} from 'react-router-dom';
 import { useDropzone } from "react-dropzone";
 
@@ -11,6 +11,12 @@ function Home(){
 
     const {dati, setDati} = useOutletContext();
     const {setInput} = useOutletContext();
+
+    const [fl, setFl] = useState(false)
+
+    const p = useRef()
+
+    var isDisabled = !fl || !dati 
 
     useEffect(() => {
         if(exToOpen === 0){ // 0 = CSV; 1 = JSON
@@ -35,6 +41,45 @@ function Home(){
         }
     }, [file]);
     
+    useEffect(()=>{
+        p.current.innerHTML = ''
+        if(!fl){
+            p.current.innerHTML += ' Please enter an input string!'
+        }
+        if(!file){
+            p.current.innerHTML += ' Please upload a Turing Machine!'
+        }
+    }, [fl, file])
+
+    useEffect(()=>{
+        let couples = []
+        let duplicate;
+
+        if(!dati) return;
+
+        for(const t of dati?.transitions){
+            duplicate = couples.some(c =>
+                c.state === t.current_state &&
+                c.read === t.read
+            )
+
+            if(duplicate){
+                break;
+            }
+
+            couples.push({
+                state: t.current_state,
+                read: t.read
+            })
+        }
+
+        if(duplicate){
+            p.current.innerHTML='The uploaded Turing machine is not deterministic!'
+            p.current.classList.add('notDet')
+            isDisabled = false
+        }
+    }, [dati])
+
     const onDrop = useCallback(acceptedFiles => {
         if (acceptedFiles.length > 0) {
             setFile(acceptedFiles[0]);
@@ -111,23 +156,24 @@ function Home(){
                                     </div>
                                 </div>
                             </div>
+                            <p className='text-center mt-2 colPar' ref={p}></p>
                             <div className='text-center m-3'>
                                 <label id='input' className='form-label'>Input:</label>
-                                <input htmlFor="input" type='text' className='ms-2' onChange={(e)=>{e.preventDefault();setInput(e.target.value)}}></input>
+                                <input htmlFor="input" type='text' className='ms-2' onChange={(e)=>{e.preventDefault();setInput(e.target.value); setFl(true)}}></input>
                             </div>
                             <div className='row m-2'>
                                 <div className='col'>The program only accepts files that respect a certain structure:</div>
                                 <p className='col' data-bs-toggle="modal" data-bs-target="#modalEx">See Example</p>
                             </div>
                             <div className='d-flex justify-content-around'>
-                                <Link to='/SimulateAndTranslate' className="w-50 btn border-3 mt-3 d-flex justify-content-center align-items-center fw-bold">Simulate and Translate Turing Machine</Link>
+                                <Link to='/SimulateAndTranslate' className={`w-50 btn border-3 mt-3 d-flex justify-content-center align-items-center fw-bold ${isDisabled ? "disableButton" : ''}`}>Simulate and Translate Turing Machine</Link>
                             </div>
                         </form>
                         <div className="modal fade" id="modalEx" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog modal-lg">
                             <div className="modal-content">
                                 <div className="modal-header">
-                                    <h1 className="modal-title fs-5" id="exampleModalLabel">See Examples</h1>
+                                    <h1 className="modal-title" id="exampleModalLabel">See Examples</h1>
                                     <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div className="modal-body">
