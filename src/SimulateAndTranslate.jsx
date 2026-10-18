@@ -121,7 +121,7 @@ function SimulateAndTranslate(){
             const secTrans = dati.transitions.find(
                 (trans) => trans.current_state === dati.machine.initial_state && trans.read === inputArr[0] 
             );
-            generateTranslation(firstTrans, secTrans, dati, alphEnc, numOfStates, allM, 0);
+            generateTranslation(firstTrans, secTrans, dati, alphEnc, numOfStates, allM, 0, input);
         }
 
         let executed = false;
@@ -166,9 +166,9 @@ function SimulateAndTranslate(){
             );
 
             if(conf === 1) {
-                generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, 1);
+                generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, 1, input);
             } else {
-                generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, conf);
+                generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, conf, input);
             }
 
             if (nextTrans) {
@@ -184,7 +184,7 @@ function SimulateAndTranslate(){
                         direction: trans.direction,
                         next_state: trans.next_state 
                     }
-                    generateTranslation(lastTrans, lastTrans, dati, alphEnc, numOfStates, allM, conf+1);
+                    generateTranslation(lastTrans, lastTrans, dati, alphEnc, numOfStates, allM, conf+1, input);
                 }
                 setInputArr(input)
                 setGo(false)

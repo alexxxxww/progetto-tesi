@@ -151,7 +151,7 @@ export function pre_trans(allM){
         transaux := ${transaux}</br></br>`
 }
 
-export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, nConf){
+export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, nConf, input){
     const par = document.getElementById('write_here_sim')
     let lambda = `&#955;`
     let N = '';
@@ -159,6 +159,7 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
     let blank = `&#9633;`
     let epsilon = `&epsilon;`
     let theta = `&theta;`
+    let sigma = `&#931;`
 
     AlphBlank.push(blank)
     let numOfElBlank = (AlphBlank).length;
@@ -221,6 +222,21 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
     encodingKeys.push(q)
 
     let translation = '';
+
+    if(nConf === 0){
+        translation += `${overline}M${closeOv} ${overline}s${closeOv} = init(${lambda}y.trans(${lambda}x.final(${lambda}w.w)x)y)${overline}${input}${closeOv}</br></br>`
+        
+        translation += `initk${overline}${input}${closeOv}</br>
+            = (${lambda}k.lift<sub>${sigma}</sub>(${lambda}r.k&lt;${overline}${epsilon}${closeOv}, ${overline}${blank}${closeOv}, r, ${overline}${dati.machine.initial_state}${closeOv}&gt;))k${overline}${input}${closeOv}</br>
+            →<sub>det</sub> lift<sub>${sigma}</sub>(${lambda}r.(k&lt;${overline}${epsilon}${closeOv}, ${overline}${blank}${closeOv}, r, ${overline}${dati.machine.initial_state}${closeOv}&gt;))${overline}${input}${closeOv}</br>
+            →<sub>det</sub> (${lambda}r.(k&lt;${overline}${epsilon}${closeOv}, ${overline}${blank}${closeOv}, r, ${overline}${dati.machine.initial_state}${closeOv}&gt;))${overline}${input}${closeOv}</br>
+            →<sub>det</sub> k&lt;${overline}${epsilon}${closeOv}, ${overline}${blank}${closeOv}, ${overline}${input}${closeOv}, ${overline}${dati.machine.initial_state}${closeOv}&gt;</br>
+            = k${overline}(${epsilon}, ${blank}, ${input}, ${dati.machine.initial_state})${closeOv}</br>
+            = <span style='color:var(--orange)'>k</span>${overline}C<sub>${nConf}</sub>${closeOv}</br>
+            = <span style='color:var(--orange)'>(${lambda}y.trans(${lambda}x.final(${lambda}w.w)x)y)</span>C<sub>${nConf}</sub>${closeOv}</br>
+            = transkC<sub>${nConf}</sub>${closeOv}</br></br>`
+    }
+
     translation += `transk${C} = ${theta}transauxk${C}</br>
         →<sub>det</sub>transaux(${lambda}z.${theta}transauxz)k${C}</br>
         = <span style='color:var(--olive)'>transaux</span>(${lambda}z.transz)k${C}</br>
@@ -243,7 +259,17 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
         translation += `=${N}${s} k ${r}</br>
             →k&lt;${encodingKeys.join(' ')}&gt;</br>
             =k${confTrans.index}</br>
-            =k${C}`
+            =<span style='color: var(--orange)'>k</span>${C}</br></br>`
+
+        translation += `CONVENZIONE: C<sub>fin</sub> := (${epsilon}, ${blank}, ${input}, ${dati.machine.final_state})</br>`
+        translation += `<span style='color: var(--orange)'>(${lambda}x.final(${lambda}w.w)x)</span> ${overline}C<sub>fin</sub>${closeOv}</br>
+        = (${lambda}k.${lambda}y.y(${lambda}v.${lambda}a.${lambda}s.${lambda}q.flat<sub>${sigma}<sub>${blank}</sub></sub>ks))k${overline}C<sub>fin</sub>${closeOv}</br>
+        →<sub>det</sub> ${overline}C<sub>fin</sub>${closeOv}(${lambda}v.${lambda}a.${lambda}s.${lambda}q.flat<sub>${sigma}<sub>${blank}</sub></sub>ks)</br>
+        = ${overline}(${epsilon}, ${blank}, ${input}, ${dati.machine.final_state})${closeOv}(${lambda}v.${lambda}a.${lambda}s.${lambda}q.flat<sub>${sigma}<sub>${blank}</sub></sub>ks)</br>
+        = (${lambda}x.x${overline}${epsilon}${closeOv} ${overline}${blank}${closeOv} ${overline}${input}${closeOv} ${overline}${dati.machine.final_state}${closeOv})(${lambda}v.${lambda}a.${lambda}s.${lambda}q.flat<sub>${sigma}<sub>${blank}</sub></sub>ks)</br>
+        →<sub>det</sub> (${lambda}v.${lambda}a.${lambda}s.${lambda}q.flat<sub>${sigma}<sub>${blank}</sub></sub>ks)${overline}${epsilon}${closeOv} ${overline}${blank}${closeOv} ${overline}${input}${closeOv} ${overline}${dati.machine.final_state}${closeOv}</br>
+        →<sub>det</sub> flat<sub>${sigma}<sub>${blank}</sub></sub>k${overline}${input}${closeOv}</br>
+        →<sub>det</sub> k${overline}${input}${closeOv}`
     } else if(trans.direction === '-'){
         N = `${lambda}u.${lambda}k.${lambda}v.xk&lt;u,${overline}${trans.write}${closeOv}, v, ${overline}${trans.next_state}${closeOv}&gt;`
         let Nrplc = N.replaceAll('x', `{${lambda}z.transz}`)
