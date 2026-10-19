@@ -42,12 +42,12 @@ input[type="file"]::-webkit-file-upload-button {
     left: -10px;
 }
 
-.notDet{
+.colPar{
     color: var(--olive-dark)
 }
 
-.colPar{
-    color: var(--olive-dark)
+.notDet{
+    color: var(--orange)
 }
 
 .btnPers{

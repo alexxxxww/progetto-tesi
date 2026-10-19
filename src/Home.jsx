@@ -10,7 +10,7 @@ function Home(){
     const [exampleContent, setExampleContent] = useState('');
 
     const {dati, setDati} = useOutletContext();
-    const {setInput} = useOutletContext();
+    const {setInput, input} = useOutletContext();
 
     const [fl, setFl] = useState(false)
 
@@ -77,8 +77,31 @@ function Home(){
             p.current.innerHTML='The uploaded Turing machine is not deterministic!'
             p.current.classList.add('notDet')
             isDisabled = false
+        }else{
+            p.current.classList.remove('notDet')
         }
     }, [dati])
+
+    useEffect(()=>{
+        if(!input || !dati) return
+
+        let bool = true
+        let inputAr = input.split('')
+
+        inputAr.forEach(char => {
+            if(!dati.machine.alphabet.includes(char)){
+                bool = false
+            }
+        });
+
+        if(!bool){
+            p.current.innerHTML='The choosen input is not valid!'
+            p.current.classList.add('notDet')
+        }else if(p.current.innerHTML==='The choosen input is not valid!'){
+            p.current.innerHTML='';
+            p.current.classList.remove('notDet')
+        }
+    },[input, dati])
 
     const onDrop = useCallback(acceptedFiles => {
         if (acceptedFiles.length > 0) {
