@@ -86,7 +86,7 @@ function Home(){
         if(!input || !dati) return
 
         let bool = true
-        let inputAr = input.split('')
+        let inputAr = input?.split('')
 
         inputAr.forEach(char => {
             if(!dati.machine.alphabet.includes(char)){

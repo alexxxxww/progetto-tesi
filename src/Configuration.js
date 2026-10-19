@@ -20,7 +20,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
     numOfConf = 0;
 
     //traduzione prima configurazione
-    par.innerHTML += '</br>encoding of configurations:'
+    par.innerHTML += '</br>Encoding of configurations:'
     let blank = `&#9633;`
     let epsilon = `&#949;`
     let init = `<span style = 'border-top: 1px solid black'>C<sub>${numOfConf}</sub></span> = <span style='text-decoration:overline; display:inline'>("${epsilon}", "${blank}", "${fakeArray.slice(1).join('')}","${curr}")</span> = `
@@ -116,7 +116,7 @@ function genConfArray(){
     confEncArray = []
     const par_trad = document.getElementById("write_here_trad");
     /* creating array with configurations encoding */
-    let text = par_trad.innerHTML.split(`encoding of configurations:`)[1]
+    let text = par_trad.innerHTML.split(`Encoding of configurations:`)[1]
     
     for(let j = 0; j <= numOfConf; j++){
         let text2 = text;

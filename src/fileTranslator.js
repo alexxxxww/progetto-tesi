@@ -13,7 +13,7 @@ export function translator(dati, input, alphEnc, statesEnc){
     //codifica alfabeto
     const alphabet = [...dati.machine.alphabet, `&#9633;`, `&#949;`];//array
 
-    par.innerHTML += `<br/>ENCODING OF THE ALPHABET</br>`;
+    par.innerHTML += `<br/>Encoding of the alphabet:</br>`;
     alphabet.forEach(symbol => {
         lambda_alp = alphabet
             .map(s => `&#955;x<sub>${s}</sub>`)
@@ -25,7 +25,7 @@ export function translator(dati, input, alphEnc, statesEnc){
 
     const states_alphabet = dati.machine.set_of_states;
 
-    par.innerHTML += `<br/>ENCODING OF THE SET OF STATES</br>`;
+    par.innerHTML += `<br/>Encoding of the set of states:</br>`;
     states_alphabet.forEach(symbol => {
         lambda = states_alphabet
             .map(s => `&#955;x<sub>${s}</sub>`)
@@ -35,7 +35,7 @@ export function translator(dati, input, alphEnc, statesEnc){
         par.innerHTML += `<div style='text-decoration:overline; display:inline'>${symbol}</div>: ${statesEnc[symbol]}<br>`
     });
 
-    par.innerHTML += `<br/>encoding of input string '${input}':`
+    par.innerHTML += `<br/>Encoding of input string '${input}':`
     translateString(input, par);
     par.innerHTML += `<br/>`
 }
