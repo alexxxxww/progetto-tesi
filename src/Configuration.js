@@ -233,8 +233,8 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
             →<sub>det</sub> k&lt;${overline}${epsilon}${closeOv}, ${overline}${blank}${closeOv}, ${overline}${input}${closeOv}, ${overline}${dati.machine.initial_state}${closeOv}&gt;</br>
             = k${overline}(${epsilon}, ${blank}, ${input}, ${dati.machine.initial_state})${closeOv}</br>
             = <span style='color:var(--orange)'>k</span>${overline}C<sub>${nConf}</sub>${closeOv}</br>
-            = <span style='color:var(--orange)'>(${lambda}y.trans(${lambda}x.final(${lambda}w.w)x)y)</span>C<sub>${nConf}</sub>${closeOv}</br>
-            = transkC<sub>${nConf}</sub>${closeOv}</br></br>`
+            = <span style='color:var(--orange)'>(${lambda}y.trans(${lambda}x.final(${lambda}w.w)x)y)</span>${overline}C<sub>${nConf}</sub>${closeOv}</br>
+            = transk${overline}C<sub>${nConf}</sub>${closeOv}</br></br>`
     }
 
     translation += `transk${C} = ${theta}transauxk${C}</br>
@@ -261,7 +261,7 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
             =k${confTrans.index}</br>
             =<span style='color: var(--orange)'>k</span>${C}</br></br>`
 
-        translation += `CONVENZIONE: C<sub>fin</sub> := (${epsilon}, ${blank}, ${input}, ${dati.machine.final_state})</br>`
+        translation += `CONVENZIONE: ${overline}C<sub>fin</sub>${closeOv} := (${epsilon}, ${blank}, ${input}, ${dati.machine.final_state})</br>`
         translation += `<span style='color: var(--orange)'>(${lambda}x.final(${lambda}w.w)x)</span> ${overline}C<sub>fin</sub>${closeOv}</br>
         = (${lambda}k.${lambda}y.y(${lambda}v.${lambda}a.${lambda}s.${lambda}q.flat<sub>${sigma}<sub>${blank}</sub></sub>ks))k${overline}C<sub>fin</sub>${closeOv}</br>
         →<sub>det</sub> ${overline}C<sub>fin</sub>${closeOv}(${lambda}v.${lambda}a.${lambda}s.${lambda}q.flat<sub>${sigma}<sub>${blank}</sub></sub>ks)</br>
