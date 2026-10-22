@@ -40,19 +40,34 @@ export function translator(dati, input, alphEnc, statesEnc){
     par.innerHTML += `<br/>`
 }
 
-export function translateString(string, par){
+export function translateString(string, par, stampa = true){
+    var toReturn = ''
     const input = string + `ε`;
 
     if(input.length >= 1){
         input.split("").forEach(symbol => {
-            par.innerHTML += `(${lambda_alp}.x<sub>${symbol}</sub>`
+            let cod = `(${lambda_alp}.x<sub>${symbol}</sub>`
+            if(stampa){
+                par.innerHTML += cod
+            } else {
+                toReturn += cod
+            }
         })
     } 
 
     let num = input.length;
 
     while(num > 0){
-        par.innerHTML += `)`
+        let cod = `)`
+        if(stampa){
+            par.innerHTML += cod
+        } else {
+            toReturn += cod
+        }
         num--;
+    }
+
+    if(!stampa){
+        return toReturn
     }
 }

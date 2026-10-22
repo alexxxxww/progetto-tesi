@@ -22,12 +22,19 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
     //traduzione prima configurazione
     par.innerHTML += '</br>Encoding of configurations:'
     let blank = `&#9633;`
-    let epsilon = `&#949;`
-    let init = `<span style = 'border-top: 1px solid black'>C<sub>${numOfConf}</sub></span> = <span style='text-decoration:overline; display:inline'>("${epsilon}", "${blank}", "${fakeArray.slice(1).join('')}","${curr}")</span> = `
+    let epsilon = `ε`
+    par.innerHTML += `<span style = 'border-top: 1px solid black'>C<sub>${numOfConf}</sub></span> =`
+    let init = `<span style='text-decoration:overline; display:inline'>("${epsilon}", "${blank}", "${fakeArray.slice(1).join('')}","${curr}")</span>`
     let initEnc = `&#955;x.(x(${alphEnc[epsilon]}) (${alphEnc[blank]}) (`;
-    par.innerHTML += `<br/>${init + initEnc}`
+    par.innerHTML += `<br/>${init + ' = ' + initEnc}`
     translateString(fakeArray.slice(1).join(''), par)
     par.innerHTML += `) (${statesEnc[curr]}))`
+
+    confEncArray.push({
+        index: init,
+        conf: initEnc + translateString(fakeArray.slice(1).join(''), par, false) + `) (${statesEnc[curr]}))`,
+        nOfConf: numOfConf
+    })
 
     var pre_write = '';
 
@@ -36,12 +43,6 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
         const trans = dati.transitions.find(
             t => (t.current_state == curr && t.read == plchldFakeArray[i])
         )
-
-        /*if(!trans && dati.machine.final_state !== curr){
-            div.innerHTML += ' transizione non trovata'
-            par.innerHTML += '</br>transizione non trovata'
-            break ciclo
-        }*/
 
         if(pre_write !== '') plchldFakeArray[i-1] = pre_write
         let fakeArray = [...plchldFakeArray];
@@ -65,27 +66,52 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
             ReverseString = [...ReverseString, beforeHead[n]]
         }
 
-        var conf = `<span style='border-top:1px solid black'>C<sub>${numOfConf}</sub></span> = <span style='text-decoration:overline; display:inline'>("${beforeHead}","${head}","${afterHead}","${state}")</span> = `
+        par.innerHTML += `<span style='border-top:1px solid black'>C<sub>${numOfConf}</sub></span> = `
+        var conf = `<span style='text-decoration:overline; display:inline'>("${beforeHead}","${head}","${afterHead}","${state}")</span>`
 
-        par.innerHTML += `<br/>${conf} &#955;x.(x`
+        var encConf = ''
+        par.innerHTML += ` = <br/>${conf} &#955;x.(x`
+        encConf = `&#955;x.(x`
         if(beforeHead == epsilon){
-            par.innerHTML += `(${alphEnc[epsilon]}`;
-        }else if(beforeHead.length == 1)
-            par.innerHTML += `(${alphEnc[beforeHead]}`;
-        else if(beforeHead.length > 1)
+            let cod = `(${alphEnc[epsilon]}`
+            par.innerHTML += cod;
+            encConf += cod
+        }else if(beforeHead.length == 1){
+            let cod = `(${alphEnc[beforeHead]}`
+            par.innerHTML += cod;
+            encConf += cod
+        }else if(beforeHead.length > 1){
             translateString(beforeHead.split('').reverse().join(''), par);
-
-        par.innerHTML += `) (${alphEnc[head]}`;
+            encConf += translateString(beforeHead.split('').reverse().join(''), par, false)
+        }
+            
+        let codEx = `) (${alphEnc[head]}`
+        par.innerHTML += codEx;
+        encConf += codEx
 
         if(afterHead == epsilon){
-            par.innerHTML += `) (${alphEnc[epsilon]}`
-        } else if(afterHead.length == 1)
-            par.innerHTML += `) (${alphEnc[afterHead]}`
-        else if(afterHead.length > 1){
+            let cod = `) (${alphEnc[epsilon]}`
+            par.innerHTML += cod
+            encConf += cod
+        } else if(afterHead.length == 1){
+            let cod = `) (${alphEnc[afterHead]}`
+            par.innerHTML += cod
+            encConf += cod
+        } else if(afterHead.length > 1){
             par.innerHTML += ') ('
             translateString(afterHead.split('').reverse().join(''), par);
+            encConf += `) (` + translateString(afterHead.split('').reverse().join(''), par, false)
         }
-        par.innerHTML += `) (${statesEnc[state]}))`  
+
+        let codExt = `) (${statesEnc[state]}))`
+        par.innerHTML += codExt
+        encConf += codExt
+
+        confEncArray.push({
+            index: conf,
+            conf: encConf,
+            nOfConf: numOfConf
+        })
 
         if(dati.machine.final_state === curr){
             setAcceptedString(true)
@@ -109,13 +135,14 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
         
         curr = trans.next_state;
     } 
-    genConfArray();
+    console.log(confEncArray)
+    //genConfArray();
 }
 
-function genConfArray(){
+/*function genConfArray(){
     confEncArray = []
     const par_trad = document.getElementById("write_here_trad");
-    /* creating array with configurations encoding */
+    /* creating array with configurations encoding 
     let text = par_trad.innerHTML.split(`Encoding of configurations:`)[1]
     
     for(let j = 0; j <= numOfConf; j++){
@@ -137,7 +164,8 @@ function genConfArray(){
             });
         }
     }
-}
+    console.log(confEncArray)
+}*/
 
 export function pre_trans(allM){
     const par = document.getElementById('write_here_sim')
@@ -182,6 +210,8 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
         c => c.nOfConf === nConf
     )
 
+    console.log(confTrans)
+
     const overline = `<span style='border-top:1px solid black'>`
     const closeOv = `</span>`
     const C = `${overline}C<sub>${nConf}</sub>${closeOv}`
@@ -193,9 +223,9 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
     const values = [...content.matchAll(/"([^"]*)"/g)].map(m => m[1]);
     
     let sRevArray = [];
-        let sEl = values[0].split('')
-        for(let n = sEl.length; n >= 0 ; n--){
-            sRevArray = [...sRevArray, sEl[n]]
+    let sEl = values[0]?.split('')
+    for(let n = sEl?.length; n >= 0 ; n--){
+        sRevArray = [...sRevArray, sEl[n]]
     }
 
     let encodingKeys = []
