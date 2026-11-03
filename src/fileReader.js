@@ -40,7 +40,7 @@ export function text_extractor(file){
 
                     line.push(current.trim());
 
-                    if(line[0] == 'machine'){
+                 if(line[0] == 'machine'){
                         data.machine.alphabet = line[1].split(",");
                         data.machine.set_of_states = line[2].split(",");
                         data.machine.initial_state = line[3];

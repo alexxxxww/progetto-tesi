@@ -20,13 +20,13 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
     numOfConf = 0;
 
     //traduzione prima configurazione
-    par.innerHTML += '</br>Encoding of configurations:'
+    par.innerHTML += '</br>Encoding of configurations: </br>'
     let blank = `&#9633;`
     let epsilon = `ε`
     par.innerHTML += `<span style = 'border-top: 1px solid black'>C<sub>${numOfConf}</sub></span> =`
     let init = `<span style='text-decoration:overline; display:inline'>("${epsilon}", "${blank}", "${fakeArray.slice(1).join('')}","${curr}")</span>`
-    let initEnc = `&#955;x.(x(${alphEnc[epsilon]}) (${alphEnc[blank]}) (`;
-    par.innerHTML += `<br/>${init + ' = ' + initEnc}`
+    let initEnc = `&#955;x.(x(${alphEnc[`&#949;`]}) (${alphEnc[blank]}) (`;
+    par.innerHTML += `${init + ' = ' + initEnc}`
     translateString(fakeArray.slice(1).join(''), par)
     par.innerHTML += `) (${statesEnc[curr]}))`
 
@@ -66,14 +66,15 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
             ReverseString = [...ReverseString, beforeHead[n]]
         }
 
-        par.innerHTML += `<span style='border-top:1px solid black'>C<sub>${numOfConf}</sub></span> = `
+        par.innerHTML += `</br>`
+        par.innerHTML += `<span style='border-top:1px solid black'>C<sub>${numOfConf}</sub></span> `
         var conf = `<span style='text-decoration:overline; display:inline'>("${beforeHead}","${head}","${afterHead}","${state}")</span>`
 
         var encConf = ''
-        par.innerHTML += ` = <br/>${conf} &#955;x.(x`
+        par.innerHTML += `= ${conf} &#955;x.(x`
         encConf = `&#955;x.(x`
         if(beforeHead == epsilon){
-            let cod = `(${alphEnc[epsilon]}`
+            let cod = `(${alphEnc[`&#949;`]}`
             par.innerHTML += cod;
             encConf += cod
         }else if(beforeHead.length == 1){
@@ -90,7 +91,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
         encConf += codEx
 
         if(afterHead == epsilon){
-            let cod = `) (${alphEnc[epsilon]}`
+            let cod = `) (${alphEnc[`&#949;`]}`
             par.innerHTML += cod
             encConf += cod
         } else if(afterHead.length == 1){
@@ -139,33 +140,6 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
     //genConfArray();
 }
 
-/*function genConfArray(){
-    confEncArray = []
-    const par_trad = document.getElementById("write_here_trad");
-    /* creating array with configurations encoding 
-    let text = par_trad.innerHTML.split(`Encoding of configurations:`)[1]
-    
-    for(let j = 0; j <= numOfConf; j++){
-        let text2 = text;
-        let split = text2.split(`C<sub>${j}</sub></span> = `)[1]
-        let idx = split.split(` = `)[0];
-        
-        if(j === numOfConf){
-            confEncArray.push({
-                index: idx,
-                conf: split.split(` = `)[1],
-                nOfConf: j
-            });
-        } else {
-            confEncArray.push({
-                index: idx,
-                conf: split.split(` = `)[1].split(`<span `)[0],
-                nOfConf: j
-            });
-        }
-    }
-    console.log(confEncArray)
-}*/
 
 export function pre_trans(allM){
     const par = document.getElementById('write_here_sim')
@@ -185,7 +159,7 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
     let N = '';
     let AlphBlank = [...dati.machine.alphabet];
     let blank = `&#9633;`
-    let epsilon = `&epsilon;`
+    let epsilon = `&#949;`
     let theta = `&theta;`
     let sigma = `&#931;`
 
