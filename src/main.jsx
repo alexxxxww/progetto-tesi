@@ -23,7 +23,9 @@ const router = createBrowserRouter([
       },
     ],
   },
-]);
+],{
+  basename: "/progetto-tesi"
+});
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
