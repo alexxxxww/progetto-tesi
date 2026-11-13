@@ -21,3 +21,32 @@
   content:'Here will be generated the translation during the simulation of the Turing Machine...';
   color:gray
 }
+
+.contenitoreAdatt{
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    min-height: 0;
+}
+
+.contAdattamento{
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.contIngrandimento{
+    min-height: 100px;
+    overflow-y: auto;
+}
+
+.separatore {
+    height: 6px;
+    flex-shrink: 0;
+    cursor: ns-resize;
+    background-color: #ccc;
+}
+
+.separatore:hover {
+    background-color: #888;
+}

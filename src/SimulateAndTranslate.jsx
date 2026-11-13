@@ -42,6 +42,44 @@ function SimulateAndTranslate(){
     var numOfStates = dati.machine.set_of_states.length;
     var numOfEl = dati.machine.alphabet.length;
 
+    const [altezzaSim, setAltezzaSim] = useState(50);
+    // altezzaSim = altezza del pannello inferirore, espressa in percentuale rispetto all'altezza del contenitore principale
+    const [ridimensionamento, setRidimensionamento] = useState(false);
+    // false = l'utente non sta trascinando, true = l'utente sta trascinando
+
+    const contenitoreRef = useRef(null);
+
+    const iniziaRidimensionamento = (e) => {
+        e.preventDefault();
+        setRidimensionamento(true);
+    };
+
+    useEffect(() => {
+        const ridimensiona = (e) => {
+            if (!ridimensionamento || !contenitoreRef.current) return;
+
+            const rect = contenitoreRef.current.getBoundingClientRect();
+            //recupera le dimensioni del contenitore
+
+            const nuovaAltezza =
+                ((rect.bottom - e.clientY) / rect.height) * 100;
+
+            setAltezzaSim(Math.min(85, Math.max(15, nuovaAltezza)));
+        };
+
+        const terminaRidimensionamento = () => {
+            setRidimensionamento(false);
+        };
+
+        window.addEventListener('mousemove', ridimensiona);
+        window.addEventListener('mouseup', terminaRidimensionamento);
+
+        return () => {
+                window.removeEventListener('mousemove', ridimensiona);
+                window.removeEventListener('mouseup', terminaRidimensionamento);
+            };
+    }, [ridimensionamento]);
+
     useEffect(() => {
         if (!allData) return;
 
@@ -281,12 +319,15 @@ function SimulateAndTranslate(){
                             />
                         </div>
                     </div>
-                    <div className='col-6 vh-90' style={{textWrap: 'wrap', flex: '1 1 0', fontSize: '15px', display: 'flex', flexDirection: 'column', minHeight: 0}}>
-                        <div id='write_here_trad' ref={container} onScroll={handleScroll} style={{flex: '1 1 0', overflowY: 'auto'}} className='p-3'>
+                    <div ref={contenitoreRef} className='contenitoreAdatt col-6' style={{textWrap: 'wrap', fontSize: '15px', display: 'flex'}}>
+                        <div id='write_here_trad' ref={container} onScroll={handleScroll} className='contAdattamento p-3'>
                             {overflow && (<p id="scrollMessage" className='p-1 text-center rounded border border-black' style={{width:'fit-content'}}>Scroll to see more ↓</p>)}
                         </div>
-                        <hr/>
-                        <div id='write_here_sim' ref={containerTranslate} style={{flex: '1 1 0', overflowY: 'auto'}} className='p-3'></div>
+                        <div
+                            className="separatore"
+                            onMouseDown={iniziaRidimensionamento}
+                        />
+                        <div id='write_here_sim' ref={containerTranslate} className='contIngrandimento p-3' style={{ height: `${altezzaSim}%` }}></div>
                     </div>
                 </div>
                 <div id='write_here' className='vh-10 fs-5'>
