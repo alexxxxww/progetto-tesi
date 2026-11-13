@@ -24,7 +24,7 @@ function SimulateAndTranslate(){
     const [cell, setCell] = useState(1)
     const [overflow, setOverflow] = useState()
     const [conf, setConf] = useState(1);
-    const [tape, setTape] = useState( ['...', `&#9633;`, ...input.split(''), `&#9633;`, '...'])
+    const [tape, setTape] = useState( ['...', `&#9633;`, ...(input ?? '').split(''), `&#9633;`, '...'])
     const [allData, setAllData] = useState(false)
     const [inputArr, setInputArr] = useState(input)
 
@@ -39,8 +39,8 @@ function SimulateAndTranslate(){
 
     var allM = {};
 
-    var numOfStates = dati.machine.set_of_states.length;
-    var numOfEl = dati.machine.alphabet.length;
+    var numOfStates = dati?.machine?.set_of_states?.length ?? 0;
+    var numOfEl = dati?.machine?.alphabet?.length ?? 0;
 
     const [altezzaSim, setAltezzaSim] = useState(50);
     // altezzaSim = altezza del pannello inferirore, espressa in percentuale rispetto all'altezza del contenitore principale
@@ -81,7 +81,7 @@ function SimulateAndTranslate(){
     }, [ridimensionamento]);
 
     useEffect(() => {
-        if (!allData) return;
+        if (!allData || !dati) return;
 
         setActiveState(dati.machine?.initial_state || '');
         setActiveRead(input[0] || '');
@@ -118,6 +118,8 @@ function SimulateAndTranslate(){
     },[input, dati])
 
     useEffect(()=>{
+        if(!allData) return;
+
         if(tape && cell){
             generateTape(tape);
             animation(1);
@@ -125,6 +127,8 @@ function SimulateAndTranslate(){
     }, [allData, tape])
 
     useEffect(()=> {
+        if(!allData) return
+        
         animation(cell)
     }, [cell])
 
@@ -287,9 +291,17 @@ function SimulateAndTranslate(){
 
         setOverflow(hasOverflow);
     };
-
+    if (!dati || !dati.machine || !dati.transitions || !input) {
+        return (
+            <div className="d-flex justify-content-center align-items-center"
+                style={{ height: '100vh' }}>
+                <p>Nessuna macchina caricata. Carica un file per iniziare.</p>
+            </div>
+        );
+    } else 
     return(
         <>
+        
             <div className="p-2" style={{height:'100vh', overflow:'hidden'}}>
                 <div className='row m-0' style={{height: '90vh', width: '100%', flexWrap: 'nowrap'}} >
                     <div className='col-6 vh-90' style={{flex: '1 1 0', display: 'flex', flexDirection: 'column', minHeight: 0}}>

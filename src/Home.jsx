@@ -12,11 +12,15 @@ function Home(){
     const {dati, setDati} = useOutletContext();
     const {setInput, input} = useOutletContext();
 
+    const [error, setError] = useState(false)
+    const [errorMsg, setErrorMsg] = useState([])
+
     const [fl, setFl] = useState(false)
 
     const p = useRef()
+    const [duplicate, setDuplicate] = useState(false)
 
-    var isDisabled = !fl || !dati 
+    var isDisabled = !fl || !dati || error || duplicate
 
     useEffect(() => {
         if(exToOpen === 0){ // 0 = CSV; 1 = JSON
@@ -35,33 +39,41 @@ function Home(){
 
     useEffect(()=>{
         if(file){
-            text_extractor(file)
+            text_extractor(file, setError, error)
                 .then(data => {setDati(data)})
                 .catch(err => console.error(err));
         }
     }, [file]);
-    
+
     useEffect(()=>{
-        p.current.innerHTML = ''
-        if(!fl){
-            p.current.innerHTML += ' Please enter an input string!'
-        }
-        if(!file){
-            p.current.innerHTML += ' Please upload a Turing Machine!'
-        }
+        setErrorMsg(prev => {
+            let aggiornati = prev.filter(m =>
+                m !== ' Please enter an input string!' &&
+                m !== ' Please upload a Turing Machine!'
+            );
+
+            if (!fl) {
+                aggiornati.push(' Please enter an input string!');
+            }
+
+            if (!file) {
+                aggiornati.push(' Please upload a Turing Machine!');
+            }
+
+            return aggiornati;
+        });
     }, [fl, file])
 
     useEffect(()=>{
         let couples = []
-        let duplicate;
 
         if(!dati) return;
 
         for(const t of dati?.transitions){
-            duplicate = couples.some(c =>
+            setDuplicate(couples.some(c =>
                 c.state === t.current_state &&
                 c.read === t.read
-            )
+            ))
 
             if(duplicate){
                 break;
@@ -74,13 +86,19 @@ function Home(){
         }
 
         if(duplicate){
-            p.current.innerHTML='The uploaded Turing machine is not deterministic!'
-            p.current.classList.add('notDet')
-            isDisabled = false
-        }else{
-            p.current.classList.remove('notDet')
+            setErrorMsg(prev => [...prev, ' The uploaded Turing machine is not deterministic!'])
+        }else if(errorMsg.includes(' The uploaded Turing machine is not deterministic!')){
+            setErrorMsg(prev => prev.filter(m => m !== ' The uploaded Turing machine is not deterministic!'))
         }
     }, [dati])
+
+    useEffect(()=>{
+         if(error){
+            setErrorMsg(prev => [...prev, ' The uploaded Turing Machine does not respect the established structure!'])
+        } else if(errorMsg.includes(' The uploaded Turing Machine does not respect the established structure!')) {
+            setErrorMsg(prev => prev.filter(m => m !== ' The uploaded Turing Machine does not respect the established structure!'))
+        }
+    }, [error])
 
     useEffect(()=>{
         if(!input || !dati) return
@@ -95,13 +113,20 @@ function Home(){
         });
 
         if(!bool){
-            p.current.innerHTML='The choosen input is not valid!'
-            p.current.classList.add('notDet')
-        }else if(p.current.innerHTML==='The choosen input is not valid!'){
-            p.current.innerHTML='';
-            p.current.classList.remove('notDet')
+            setErrorMsg(prev => [...prev, ' The choosen input is not valid!'])
+        }else if(errorMsg.includes(' The choosen input is not valid!')){
+            setErrorMsg(prev => prev.filter(m => m !== ' The choosen input is not valid!'))
         }
     },[input, dati])
+
+    useEffect(()=>{
+        if(errorMsg.includes(' The uploaded Turing machine is not deterministic!') 
+        || errorMsg.includes(' The uploaded Turing Machine does not respect the established structure!')
+        || errorMsg.includes(' The choosen input is not valid!'))
+            p.current.classList.add('notDet')
+        else 
+            p.current.classList.remove('notDet')
+    }, [errorMsg])
 
     const onDrop = useCallback(acceptedFiles => {
         if (acceptedFiles.length > 0) {
@@ -161,7 +186,7 @@ function Home(){
                                         <br/>
                                         <div 
                                             {...getRootProps()} 
-                                            className={`p-4 m-2 text-center rounded-4 style-pointer transition-all ${
+                                            className={`upload-container p-4 m-2 text-center rounded-4 style-pointer transition-all ${
                                                 isDragActive ? 'bg-light border-primary text-primary' : 'border-secondary text-muted'
                                             }`}
                                             style={{ cursor: 'pointer', border: '2px dashed grey' }}
@@ -179,7 +204,7 @@ function Home(){
                                     </div>
                                 </div>
                             </div>
-                            <p className='text-center mt-2 colPar' ref={p}></p>
+                            <p className='text-center mt-2 colPar' ref={p}>{errorMsg}</p>
                             <div className='text-center m-3'>
                                 <label id='input' className='form-label'>Input:</label>
                                 <input htmlFor="input" type='text' className='ms-2' onChange={(e)=>{e.preventDefault();setInput(e.target.value); setFl(true)}}></input>

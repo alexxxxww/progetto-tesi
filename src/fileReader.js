@@ -1,5 +1,5 @@
 //fileReader = API nativa del browser
-export function text_extractor(file){
+export function text_extractor(file, setError, error){
     return new Promise((resolve, reject) =>{
         if(!file){
             reject("Nessun file selezionato");
@@ -13,7 +13,29 @@ export function text_extractor(file){
             const content = e.target.result; // Contiene i dati del file
             
             if (file.name.endsWith('.json')) {
-                resolve(JSON.parse(content));
+                let parsingDati = JSON.parse(content)
+                const datiValidi =
+                    parsingDati?.machine != {} &&
+                    parsingDati?.machine?.set_of_states?.length > 0 &&
+                    parsingDati?.machine?.alphabet?.length > 0 &&
+                    parsingDati?.machine?.initial_state &&
+                    parsingDati?.machine?.final_state &&
+                    parsingDati?.transitions != [] &&
+                    parsingDati?.transitions?.every(trans =>
+                        trans.current_state &&
+                        trans.read &&
+                        trans.write &&
+                        trans.direction &&
+                        trans.next_state
+                    );
+                if(datiValidi){
+                    if(error) setError(false)
+                    resolve(parsingDati);
+                } else {
+                    setError(true);
+                    reject("La macchina non rispetta la struttura prestabilita.");
+                    return ;
+                }
             } else if (file.name.endsWith('.csv')) {
                 const lines = content.trim().split("\n");
 
@@ -55,10 +77,31 @@ export function text_extractor(file){
                         });
                     }
                 }
-                console.log(data)
-                resolve(data);
+
+                const datiValidi =
+                    data?.machine != {} &&
+                    data?.machine?.set_of_states?.length > 0 &&
+                    data?.machine?.alphabet?.length > 0 &&
+                    data?.machine?.initial_state &&
+                    data?.machine?.final_state &&
+                    data?.transitions != [] &&
+                    data?.transitions?.every(trans =>
+                        trans.current_state &&
+                        trans.read &&
+                        trans.write &&
+                        trans.direction &&
+                        trans.next_state
+                    );
+                if(datiValidi){
+                    if(error) setError(false)
+                    resolve(data);
+                } else{
+                    setError = true;
+                    reject("La macchina non rispetta la struttura prestabilita.");
+                    return ;
+                }
             } else {
-                reject("Formato non supportato");
+                reject("Formato non supportato.");
                 return ;
             }
         };
