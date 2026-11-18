@@ -164,7 +164,7 @@ function Home(){
                         <p className='fs-6 col text-start position-relative' id="titleDesign" style={{color: 'var(--olive-dark)'}}>SIMULATOR <br/>AND<br/>TRANSLATOR</p>
                     </div>
                     <div className='h-75 row align-items-center'>
-                        <div className='h-100 w-75 d-flex justify-content-center align-items-center'>
+                        <div className='col-9 h-100 d-flex justify-content-center align-items-center'>
                             <form>
                                 <div className='d-flex justify-content-center'>
                                     <div className='w-75 border rounded-5 shadow d-flex justify-content-center position-relative'>
@@ -210,24 +210,34 @@ function Home(){
                                     <label id='input' className='form-label'>Input:</label>
                                     <input htmlFor="input" type='text' className='ms-2' onChange={(e)=>{e.preventDefault();setInput(e.target.value); setFl(true)}}></input>
                                 </div>
-                                {/*<div className='row m-2'>
-                                    <div className='col'>The program only accepts files that respect a certain structure:</div>
-                                    <p className='col' data-bs-toggle="modal" data-bs-target="#modalEx">See Example</p>
-                                </div>*/}
+                                <div className='row m-2'>
+                                    <div className='col'>The program only accepts files that respect a certain structure. See the examples on the right.</div>
+                                </div>
                                 <div className='d-flex justify-content-around'>
                                     <Link to='/SimulateAndTranslate' className={`w-50 btn border-3 mt-3 d-flex justify-content-center align-items-center fw-bold ${isDisabled ? "disableButton" : ''}`}>Simulate and Translate Turing Machine</Link>
                                 </div>
                             </form>  
                         </div>
-                        <div className='h-100 w-25 d-flex flex-column align-items-center justify-content-center'>
-                                <p>See, use or modify the following examples.</p>
-                                <ul>
-                                    <div className="card">
-                                        <div className="card-body">
-                                            This is some text within a card body.
+                        <div className='h-100 col-3 d-flex flex-column align-items-center'>
+                                <div className='w-100 d-flex flex-column align-items-start gap-2'>
+                                    {['Valid CSV - Head moves right',
+                                        'Valid JSON - Head moves right',
+                                        'Valid JSON – Head moves left',
+                                        'Invalid JSON - Not Deterministic Machine',
+                                        'Invalid JSON - Incorrect structure'
+                                    ].map((n) => (
+                                        <div key={n}>
+                                            <div>
+                                                {n}
+                                                <div>
+                                                    <i className="pe-1 bi bi-box-arrow-in-down"></i>
+                                                    <i className="pe-1 bi bi-pencil-square"></i>
+                                                    <i className="bi bi-eye"></i>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </ul>
+                                    ))}
+                                </div>
                         </div>
                     </div>
                 </div>
