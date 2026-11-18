@@ -2,7 +2,7 @@ import '@xyflow/react/dist/style.css' //https://reactflow.dev/learn
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, MarkerType } from '@xyflow/react';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { generateConfigurationsTree, generateTranslation, pre_trans } from './Configuration.js';
+import { generateConfigurationsTree, generateTranslation} from './Configuration.js';
 import { translator } from "./fileTranslator.js";
 import "./SimulateAndTranslate.css"
 import SelfConnecting from './selfConnectingEdge';
@@ -152,7 +152,6 @@ function SimulateAndTranslate(){
         }
 
         if(conf === 1){
-            pre_trans(allM)
             const firstTrans = {
                 current_state: dati.machine.initial_state,
                 read: blank,
@@ -295,7 +294,7 @@ function SimulateAndTranslate(){
         return (
             <div className="d-flex justify-content-center align-items-center"
                 style={{ height: '100vh' }}>
-                <p>Nessuna macchina caricata. Carica un file per iniziare.</p>
+                <p>No machines uploaded. Upload a file to get started.</p>
             </div>
         );
     } else 

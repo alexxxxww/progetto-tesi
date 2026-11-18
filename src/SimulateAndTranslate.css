@@ -41,7 +41,7 @@
 }
 
 .separatore {
-    height: 6px;
+    height: 2px;
     flex-shrink: 0;
     cursor: ns-resize;
     background-color: #ccc;

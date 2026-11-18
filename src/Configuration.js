@@ -1,4 +1,5 @@
 import { translateString } from "./fileTranslator";
+import Tooltip from 'bootstrap/js/dist/tooltip';
 
 var numOfConf;
 var confEncArray = [];
@@ -140,17 +141,19 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
     //genConfArray();
 }
 
+function inizializzaTooltip() {
+    const tooltipElements = document.querySelectorAll(
+        '[data-bs-toggle="tooltip"]'
+    );
 
-export function pre_trans(allM){
-    const par = document.getElementById('write_here_sim')
-    let lambda = `&#955;`
-    transaux = `(${lambda}x.${lambda}k.${lambda}y.y(${lambda}u.${lambda}a.${lambda}v.${lambda}q.q${Object.keys(allM).join('')}aukv))`;
-    
-    par.innerHTML = `Q<sub>i</sub> := M<sub>i</sub>{x ← ${lambda}z.transz}</br>
-        T<sub>i</sub><sup>j</sup> := N<sub>i</sub><sup>j</sup>{x ← ${lambda}z.transz}</br>
-        V<sub>i</sub> := R<sub>i</sub>{x ← ${lambda}z.transz}</br>
-        U<sub>i</sub> := P<sub>i</sub>{x ← ${lambda}z.transz}</br>
-        transaux := ${transaux}</br></br>`
+    tooltipElements.forEach(element => {
+        if (!Tooltip.getInstance(element)) {
+            new Tooltip(element, {
+                html: true,
+                trigger: 'hover'
+            });
+        }
+    });
 }
 
 export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates, allM, nConf, input){
@@ -162,6 +165,8 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
     let epsilon = `&#949;`
     let theta = `&theta;`
     let sigma = `&#931;`
+    let info = `&#9432;`
+    transaux = `(${lambda}x.${lambda}k.${lambda}y.y(${lambda}u.${lambda}a.${lambda}v.${lambda}q.q${Object.keys(allM).join('')}aukv))`;
 
     AlphBlank.push(blank)
     let numOfElBlank = (AlphBlank).length;
@@ -183,8 +188,6 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
     const confTrans = confEncArray.find(
         c => c.nOfConf === nConf
     )
-
-    console.log(confTrans)
 
     const overline = `<span style='border-top:1px solid black'>`
     const closeOv = `</span>`
@@ -242,7 +245,7 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
     }
 
     translation += `transk${C} = ${theta}transauxk${C}</br>
-        →<sub>det</sub>transaux(${lambda}z.${theta}transauxz)k${C}</br>
+        →<sub>det</sub>(<span data-bs-toggle="tooltip" data-bs-html="true" title = "transaux := ${transaux}">${info}</span>)transaux(${lambda}z.${theta}transauxz)k${C}</br>
         = <span style='color:var(--olive)'>transaux</span>(${lambda}z.transz)k${C}</br>
         = <span style='color:var(--olive)'>${transaux}</span>(${lambda}z.transz)k${C}</br>
         →<sub>det</sub>${C}(${lambda}u.${lambda}a.${lambda}v.${lambda}q.((q${Object.keys(allM).join('')}){x ← ${lambda}z.transz}aukv))</br>
@@ -252,11 +255,11 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
         →<sub>det</sub>${placeholder}${encodingKeys.join(' ')}</br>
         →<sub>det</sub>${q}${Q}${a} ${s}k${r}</br>
         = ${encoding[q]}${Q}${a} ${s}k${r}</br>
-        →<sub>det</sub><span style='color:var(--orange)'>Q<sub>${trans.current_state.split('_')[1]}</sub></span>${a} ${s}k${r}</br>
+        →<sub>det</sub>(<span data-bs-toggle="tooltip" data-bs-html="true" title = "Q<sub>i</sub> := M<sub>i</sub>{x ← ${lambda}z.transz}">${info}</span>)<span style='color:var(--orange)'>Q<sub>${trans.current_state.split('_')[1]}</sub></span>${a} ${s}k${r}</br>
         = <span style='color:var(--orange)'>(${M.replaceAll('N', 'T')}u)</span>${a} ${s}k${r}</br>
         →<sub>det</sub>${a}${M.replaceAll('N', 'T').split(`a.a`)[1]}${s} k ${r}</br>
         = ${encoding[a]}${M.replaceAll('N', 'T').split(`a.a`)[1]}${s} k ${r}</br>
-        →<sub>det</sub>T<sup>${values[1]}</sup><sub>${trans.current_state.split('_')[1]}</sub>${s} k ${r}</br>`
+        →<sub>det</sub>(<span data-bs-toggle="tooltip" data-bs-html="true" title = "T<sub>i</sub><sup>j</sup> := N<sub>i</sub><sup>j</sup>{x ← ${lambda}z.transz}">${info}</span>) T<sup>${values[1]}</sup><sub>${trans.current_state.split('_')[1]}</sub>${s} k ${r}</br>`
     
     if(dati.machine.final_state === trans.current_state){
         N = `${lambda}u.${lambda}k.${lambda}v.k&lt;u,${overline}${trans.read}${closeOv}, v, ${overline}${trans.current_state}${closeOv}&gt;`
@@ -314,7 +317,7 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
             →<sub>det</sub> ${Nrplc.split('u.')[1].replace('u', `${sRevOv}`)}k${r}</br>`
         if(values[0] == 'ε'){
             translation += `= ${encoding[s]}${Nrplc.split('u.u')[1]}k${r}</br>
-                →<sub>det</sub> U<sup>${l}, ${h}</sup>k${r}</br>
+                →<sub>det</sub> (<span data-bs-toggle="tooltip" data-bs-html="true" title = "U<sub>i</sub> := P<sub>i</sub>{x ← ${lambda}z.transz}">${info}</span>) U<sup>${l}, ${h}</sup>k${r}</br>
                 = (${plhold})k${r}</br>
                 →<sub>det</sub> ${plhold.split('k.')[1].split('))')[0]})${r}</br>
                 →<sub>det</sub> ${plhold.split('</sup>')[1]}${overline}(${h}${r})${closeOv}</br>
@@ -323,7 +326,7 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
         } else { 
             translation += `= ${overline}${a_p}${closeOv} ${overline}${pRev}${closeOv}${Nrplc.split('u.u')[1]}k${r}</br>
                 = (${alphEnc[a_p]}${overline}${pRev}${closeOv})${Nrplc.split('u.u')[1]}k${r}</br>
-                →<sub>det</sub> ${P_abb.replace('P', 'U')}${overline}${pRev}${closeOv}k${r}</br>
+                →<sub>det</sub>(<span data-bs-toggle="tooltip" data-bs-html="true" title = "U<sub>i</sub> := P<sub>i</sub>{x ← ${lambda}z.transz}">${info}</span>)  ${P_abb.replace('P', 'U')}${overline}${pRev}${closeOv}k${r}</br>
                 = (${plhold})${overline}${pRev}${closeOv}k${r}</br>
                 →<sub>det</sub> ${plhold.split(`${lambda}k.`)[1].replace('u,', `${overline}${pRev}${closeOv}, `)}${r}</br>
                 →<sub>det</sub> ${plhold.split(`</sup>`)[1].replace('u,', `${overline}${pRev}${closeOv}, `)}${overline}(${h}${r})${closeOv}</br>
@@ -362,7 +365,7 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
         var rplcU = r.split('>')[1].split('</')[0].substring(1) || epsilon 
         if(values[2] == 'ε'){
             translation += `= ${encoding[r]}${N.replaceAll('R','V').split('v.v')[1].split('k')[0]}k${s}</br>
-                →<sub>det</sub>V<sup>${l}, ${h}</sup>k${s}</br>
+                →<sub>det</sub> (<span data-bs-toggle="tooltip" data-bs-html="true" title = "V<sub>i</sub> := R<sub>i</sub>{x ← ${lambda}z.transz}">${info}</span>) V<sup>${l}, ${h}</sup>k${s}</br>
                 = (${plhold})k${s}</br>
                 →<sub>det</sub>(${plhold.split('k.')[1].split('))')[0]})${s}</br>
                 →<sub>det</sub>${plhold.split('</sup>')[1].replace('u,', `${overline}${rplcU}${closeOv}, `)}${overline}(${a}${s})${closeOv}</br>
@@ -370,7 +373,7 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
         } else { 
             translation += `= ${overline}${r.split('>')[1][0]}${closeOv} ${overline}${rplcU}${closeOv}${N.replaceAll('R','V').split('v.v')[1].split('k')[0]}k${s}</br>
                 = (${alphEnc[a_p]}${overline}${rplcU}${closeOv})${N.replaceAll('R','V').split('v.v')[1].split('k')[0]}k${s}</br>
-                →<sub>det</sub>${R_abb.replace('R', 'V')}${overline}${rplcU}${closeOv}k${s}</br>
+                →<sub>det</sub>(<span data-bs-toggle="tooltip" data-bs-html="true" title = "V<sub>i</sub> := R<sub>i</sub>{x ← ${lambda}z.transz}">${info}</span>)${R_abb.replace('R', 'V')}${overline}${rplcU}${closeOv}k${s}</br>
                 = ${plhold}${overline}${rplcU}${closeOv}k${s}</br>
                 →<sub>det</sub>${plhold.split(`${lambda}k.`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `)}${s}</br>
                 →<sub>det</sub>${plhold.split(`</sup>`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `)}${overline}(${h}${s})${closeOv}</br>
@@ -383,4 +386,5 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
     
    
     par.innerHTML += translation + '</br>';
+    inizializzaTooltip()
 }
