@@ -304,10 +304,10 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
         let pRev = sRev.split('').slice(1).length > 0 ? sRev.split('').slice(1) : epsilon
 
         if(s === blank){
-            P = `${lambda}k.<i><b>append</b></i><sup>${h}</sup>(${lambda}w.xk&lt;${overline}${epsilon}${closeOv}, ${overline}${s}${closeOv}, w, ${overline}${trans.next_state}${closeOv}&gt;)`
+            P = `${lambda}k.<i><b>append</b></i> <sup>${h}</sup>(${lambda}w.xk&lt;${overline}${epsilon}${closeOv}, ${overline}${s}${closeOv}, w, ${overline}${trans.next_state}${closeOv}&gt;)`
             P_abb = `P<sup>${l}, ${h}</sup>`
         }else{
-            P = `${lambda}u.${lambda}k.<i><b>append</b></i><sup>${h}</sup>(${lambda}w.xk&lt;u, ${overline}${s}${closeOv}, w, ${overline}${trans.next_state}${closeOv}&gt;)`
+            P = `${lambda}u.${lambda}k.<i><b>append</b></i> <sup>${h}</sup>(${lambda}w.xk&lt;u, ${overline}${s}${closeOv}, w, ${overline}${trans.next_state}${closeOv}&gt;)`
             P_abb = `P<sup>${l}, ${h}</sup><sub>${a_p}</sub>`
         }
 
@@ -353,10 +353,10 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
         
         let R_abb = ''
         if(i === blank){
-            R = `${lambda}k.<i><b>append</b></i><sup>${h}</sup>(${lambda}w.xk&lt;w, ${overline}${i}${closeOv}, ${overline}${epsilon}${closeOv}, ${overline}${trans.next_state}${closeOv}&gt;)`
+            R = `${lambda}k.<i><b>append</b></i> <sup>${h}</sup>(${lambda}w.xk&lt;w, ${overline}${i}${closeOv}, ${overline}${epsilon}${closeOv}, ${overline}${trans.next_state}${closeOv}&gt;)`
             R_abb = `R<sup>${l}, ${h}</sup>`
         } else {
-            R = `${lambda}u.${lambda}k.<i><b>append</b></i><sup>${h}</sup>(${lambda}w.xk&lt;w, ${overline}${i}${closeOv}, u, ${overline}${trans.next_state}${closeOv}&gt;)`
+            R = `${lambda}u.${lambda}k.<i><b>append</b></i> <sup>${h}</sup>(${lambda}w.xk&lt;w, ${overline}${i}${closeOv}, u, ${overline}${trans.next_state}${closeOv}&gt;)`
             R_abb = `R<sup>${l}, ${h}</sup><sub>${a_p}</sub>`
         }
         translation += `=(${N}){x ← ${lambda}z.<i><b>trans</b></i>z}${s} k ${r}</br>
