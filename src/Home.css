@@ -58,7 +58,24 @@ input[type="file"]::-webkit-file-upload-button {
     color:white;
 }
 
+.modal-title, .modal-body, .pers {
+    color: #62665B;
+    boder-color: #62665B;
+}
+
+.pers{
+    background-color: #d3d7cc;
+}
+
 .modal-content{
-    background-color: rgba(94, 92, 92, 0.538);
-    backdrop-filter: blur(5px);
+    border-color: #62665B;
+}
+
+textarea {
+    color: #62665B;
+}
+
+#input-space {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
