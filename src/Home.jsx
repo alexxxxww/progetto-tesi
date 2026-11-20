@@ -3,6 +3,7 @@ import { text_extractor } from './fileReader';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useOutletContext} from 'react-router-dom';
 import { useDropzone } from "react-dropzone";
+import { useMediaQuery } from 'react-responsive'
 
 function Home(){
     const [file, setFile] = useState(null);
@@ -18,6 +19,9 @@ function Home(){
     const [fl, setFl] = useState(false)
 
     const [duplicate, setDuplicate] = useState(false)
+    const isDesktop = useMediaQuery({
+        query: '(min-width: 960px)'
+    })
 
     var isDisabled = !fl || !dati || error || duplicate
 
@@ -226,7 +230,7 @@ function Home(){
     return(
         <>
             <div className="vh-100 w-100 row g-0 overflow-hidden">
-                <div className='col-3 h-100 bg-image text-end d-flex flex-column align-items-end justify-content-end p-4 text-light'>
+                {isDesktop ? <div className='col-3 h-100 bg-image text-end d-flex flex-column align-items-end justify-content-end p-4 text-light'>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-info-circle mb-2" viewBox="0 0 16 16">
                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                         <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
@@ -236,17 +240,17 @@ function Home(){
                         It uses an infinite tape for memory, a head that reads and writes symbols, 
                         and a set of rules to process data.
                     </p>
-                </div>
-                <div className='col-9'>
-                    <div className='h-25 w-100 row text-center align-items-center' style={{fontFamily: 'Fantasy'}}>
+                </div> : <></>}
+                <div className={isDesktop ? 'col-9' : 'col-12'}>
+                    <div className={`${isDesktop ? 'h-25' : 'm-2'} w-100 row text-center align-items-center`} style={{fontFamily: 'Fantasy'}}>
                         <p className='fs-1 text-end col' style={{color: 'var(--grey)'}}>TURING <br/>MACHINE</p>
                         <p className='fs-6 col text-start position-relative' id="titleDesign" style={{color: 'var(--olive-dark)'}}>SIMULATOR <br/>AND<br/>TRANSLATOR</p>
                     </div>
                     <div className='h-75 row align-items-stretch'>
-                        <div className='col-8 h-100 d-flex justify-content-center align-items-center'>
+                        <div className={`${isDesktop ? 'col-8 h-100' : 'vw-100 m-3'} d-flex justify-content-center align-items-center`}>
                             <form>
                                 <div className='d-flex justify-content-center w-100 flex-shrink-0'>
-                                    <div className='flex-shrink-0 border rounded-5 shadow d-flex justify-content-center position-relative'
+                                    <div className='flex-shrink-0 border rounded-5 shadow d-flex justify-content-c@enter position-relative'
                                     style={{
                                         width: '75%',
                                         minWidth: '350px', 
@@ -318,9 +322,9 @@ function Home(){
                                 </div>
                             </form>  
                         </div>
-                        <div className="col-4 h-100 d-flex flex-column overflow-hidden p-3">
+                        <div className={`${isDesktop ? 'col-4 h-100 d-flex flex-column overflow-hidden' : 'w-100 d-flex flex-row flex-nowrap overflow-x-auto'} m-0 p-3`}>
                     
-                            <div className="d-flex flex-column gap-2 overflow-auto pe-2">
+                            <div className={`d-flex ${isDesktop ? 'flex-column' : 'flex-row'}  gap-2 overflow-auto pe-2`}>
                                 {Object.entries(fileEsempioText).map(([key, value]) => (
                                     <div className="w-100 flex-shrink-0" key={key}>
                                         <div className="d-flex align-items-center gap-2 m-2 me-3">

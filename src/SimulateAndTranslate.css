@@ -30,20 +30,21 @@
 }
 
 .contAdattamento{
-    flex: 1;
+    flex: 1 1 0;
     min-height: 0;
     overflow-y: auto;
 }
 
 .contIngrandimento{
-    min-height: 100px;
+    min-height: 0;
     overflow-y: auto;
 }
 
 .separatore {
     height: 2px;
     flex-shrink: 0;
-    cursor: ns-resize;
+    cursor: row-resize;
+    touch-action: none;
     background-color: #ccc;
 }
 

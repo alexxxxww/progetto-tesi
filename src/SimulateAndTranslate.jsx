@@ -7,6 +7,7 @@ import { translator } from "./fileTranslator.js";
 import "./SimulateAndTranslate.css"
 import SelfConnecting from './selfConnectingEdge';
 import { animation, generateTape } from './MachineSimulator.js';
+import { useMediaQuery } from 'react-responsive'
 
 const edgeTypes = {
     SelfConn: SelfConnecting,
@@ -15,6 +16,10 @@ const edgeTypes = {
 function SimulateAndTranslate(){
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
+
+    const isDesktop = useMediaQuery({
+        query: '(min-width: 960px)'
+    })
     
     const { dati, input, alphEnc, statesEnc } = useOutletContext();
 
@@ -71,12 +76,12 @@ function SimulateAndTranslate(){
             setRidimensionamento(false);
         };
 
-        window.addEventListener('mousemove', ridimensiona);
-        window.addEventListener('mouseup', terminaRidimensionamento);
+        window.addEventListener('pointermove', ridimensiona);
+        window.addEventListener('pointerup', terminaRidimensionamento);
 
         return () => {
-                window.removeEventListener('mousemove', ridimensiona);
-                window.removeEventListener('mouseup', terminaRidimensionamento);
+                window.removeEventListener('pointermove', ridimensiona);
+                window.removeEventListener('pointerup', terminaRidimensionamento);
             };
     }, [ridimensionamento]);
 
@@ -330,18 +335,21 @@ function SimulateAndTranslate(){
                             />
                         </div>
                     </div>
-                    <div ref={contenitoreRef} className='contenitoreAdatt col-6' style={{textWrap: 'wrap', fontSize: '15px', display: 'flex'}}>
+                    <div ref={contenitoreRef} className='contenitoreAdatt col-6' style={{flex: '1 1 0', fontSize: '15px', minWidth: 0}}>
                         <div id='write_here_trad' ref={container} onScroll={handleScroll} className='contAdattamento p-3'>
                             {overflow && (<p id="scrollMessage" className='p-1 text-center rounded border border-black' style={{width:'fit-content'}}>Scroll to see more ↓</p>)}
                         </div>
                         <div
                             className="separatore"
-                            onMouseDown={iniziaRidimensionamento}
+                            onPointerDown={(e) => {
+                                e.preventDefault();
+                                setRidimensionamento(true);
+                            }}
                         />
-                        <div id='write_here_sim' ref={containerTranslate} className='contIngrandimento p-3' style={{ height: `${altezzaSim}%` }}></div>
+                        <div id='write_here_sim' ref={containerTranslate} className='contIngrandimento p-3' style={{ flex: `0 0 ${altezzaSim}%` }}></div>
                     </div>
                 </div>
-                <div id='write_here' className='vh-10 fs-5'>
+                <div id='write_here' className={`vh-10 ${isDesktop ? 'fs-5' : ''}`} style = {isDesktop ? {} : {fontSize: '0.75rem'}}>
                 </div>
             </div>
         </>
