@@ -17,6 +17,7 @@ function Home(){
     const [errorMsg, setErrorMsg] = useState([])
 
     const [fl, setFl] = useState(false)
+    const [enableButton, setEnableButton] = useState(false)
 
     const [duplicate, setDuplicate] = useState(false)
     const isDesktop = useMediaQuery({
@@ -76,7 +77,7 @@ function Home(){
                 return response.text();
             })
             .then(text => setExampleContent(text))
-            .catch(err => console.error("Errore nel caricamento del file CSV:", err));
+            .catch(err => console.error("Errore nel caricamento del file:", err));
     }, [exToOpen]);
 
     useEffect(()=>{
@@ -205,7 +206,7 @@ function Home(){
         }
     };
 
-    const confermaModifiche = () => {+
+    const confermaModifiche = () => {
         localStorage.setItem(
             `example-${exToOpen}`,
             exampleContent
@@ -226,6 +227,23 @@ function Home(){
         setDati(null);
         setFile(nuovoFile);
     };
+
+    const eliminaModifiche = () => {
+        localStorage.removeItem(
+            `example-${exToOpen}`,//chiave
+            exampleContent //oggetto
+        );
+
+        fetch(`${import.meta.env.BASE_URL}examples/${exToOpen}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Errore HTTP: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(text => setExampleContent(text))
+            .catch(err => console.error("Errore nel caricamento del file:", err));
+    } 
 
     return(
         <>
@@ -323,7 +341,6 @@ function Home(){
                             </form>  
                         </div>
                         <div className={`${isDesktop ? 'col-4 h-100 d-flex flex-column overflow-hidden' : 'w-100 d-flex flex-row flex-nowrap overflow-x-auto'} m-0 p-3`}>
-                    
                             <div className={`d-flex ${isDesktop ? 'flex-column' : 'flex-row'}  gap-2 overflow-auto pe-2`}>
                                 {Object.entries(fileEsempioText).map(([key, value]) => (
                                     <div className="w-100 flex-shrink-0" key={key}>
@@ -342,10 +359,10 @@ function Home(){
                                             </div>
 
                                             <div className="d-flex flex-column gap-1 flex-shrink-0">
-                                                <i className="bi bi-box-arrow-in-down"
+                                                <i className="bi bi-box-arrow-in-down btnAnim"
                                                 role="button"
                                                 onClick={(e) => {e.preventDefault(); caricaEsempio(value.path)}}/>
-                                                <i className="bi bi-eye"
+                                                <i className="bi bi-eye btnAnim"
                                                 role="button" 
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#modalEx"
@@ -371,9 +388,18 @@ function Home(){
                                 className="form-control"
                                 rows={15}
                                 value={exampleContent}
-                                onChange={(e) => setExampleContent(e.target.value)}>
+                                onChange={(e) => {setExampleContent(e.target.value); setEnableButton(true)}}>
                                 {exampleContent || "Loading..."}
                             </textarea>
+                            {localStorage.getItem(`example-${exToOpen}`) ? 
+                                <btn
+                                    className='btnAnim'
+                                    onClick={(e) => {e.preventDefault(); eliminaModifiche()}}
+                                >
+                                    Ritorna al contenuto originale
+                                </btn> 
+                                : 
+                                <></>}
                         </div>
                         <div className="modal-footer">
                             <button
@@ -384,9 +410,9 @@ function Home(){
                             </button>
 
                             <button
-                                className="btn pers"
+                                className={`btn pers ${enableButton ? '' : 'disableButton'}`}
                                 data-bs-dismiss="modal"
-                                onClick={confermaModifiche}
+                                onClick={(e)=> {e.preventDefault(); confermaModifiche(); setEnableButton(false)}}
                             >
                                 Apply changes
                             </button>

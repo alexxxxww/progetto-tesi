@@ -79,3 +79,6 @@ textarea {
     min-width: 0;
     overflow-wrap: anywhere;
 }
+.btnAnim:active{
+    transform: scale(0.95);
+}
