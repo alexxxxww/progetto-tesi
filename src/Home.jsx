@@ -396,7 +396,7 @@ function Home(){
                                     className='btnAnim'
                                     onClick={(e) => {e.preventDefault(); eliminaModifiche()}}
                                 >
-                                    Ritorna al contenuto originale
+                                    Back to the original content.
                                 </btn> 
                                 : 
                                 <></>}
