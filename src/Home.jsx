@@ -392,12 +392,12 @@ function Home(){
                                 {exampleContent || "Loading..."}
                             </textarea>
                             {localStorage.getItem(`example-${exToOpen}`) ? 
-                                <btn
-                                    className='btnAnim'
+                                <div
+                                    className='btnAnim btn pers m-2'
                                     onClick={(e) => {e.preventDefault(); eliminaModifiche()}}
                                 >
                                     Back to the original content.
-                                </btn> 
+                                </div> 
                                 : 
                                 <></>}
                         </div>

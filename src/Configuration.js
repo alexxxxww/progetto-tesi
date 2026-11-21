@@ -5,9 +5,10 @@ var numOfConf;
 var confEncArray = [];
 var transaux = '';
 
-export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setAcceptedString){
+export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setAcceptedString, MAX_PASSI){
     const div = document.getElementById("write_here");
     const par = document.getElementById("write_here_trad");
+    var n_passi = 0;
     var curr = dati.machine.initial_state;
     var inputArray = input.split('');
     var i = 0;
@@ -45,6 +46,8 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
             t => (t.current_state == curr && t.read == plchldFakeArray[i])
         )
 
+        n_passi++;
+
         if(pre_write !== '') plchldFakeArray[i-1] = pre_write
         let fakeArray = [...plchldFakeArray];
         plchldFakeArray = [...fakeArray]
@@ -72,7 +75,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
         var conf = `<span style='text-decoration:overline; display:inline'>("${beforeHead}","${head}","${afterHead}","${state}")</span>`
 
         var encConf = ''
-        par.innerHTML += `= ${conf} &#955;x.(x`
+        par.innerHTML += `= ${conf} = &#955;x.(x`
         encConf = `&#955;x.(x`
         if(beforeHead == epsilon){
             let cod = `(${alphEnc[`&#949;`]}`
@@ -117,12 +120,17 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
 
         if(dati.machine.final_state === curr){
             setAcceptedString(true)
-            div.innerHTML += ' stringa accettata'
+            div.innerHTML += ' string accepted.'
             break ciclo
         } 
         if(!trans && dati.machine.final_state !== curr){
-            div.innerHTML += ' transizione non trovata'
-            par.innerHTML += '</br>transizione non trovata'
+            div.innerHTML += ' transition not found.'
+            par.innerHTML += '</br>transition not found.'
+            break ciclo
+        }
+        if(n_passi >= MAX_PASSI){
+            div.innerHTML += ' maximum step limit reached.'
+            par.innerHTML += '</br>maximum step limit reached.'
             break ciclo
         }
         
@@ -136,9 +144,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
         }
         
         curr = trans.next_state;
-    } 
-    console.log(confEncArray)
-    //genConfArray();
+    }
 }
 
 function inizializzaTooltip() {
