@@ -19,6 +19,8 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
 
     div.innerHTML = '';
 
+    confEncArray = []
+
     numOfConf = 0;
 
     //traduzione prima configurazione
