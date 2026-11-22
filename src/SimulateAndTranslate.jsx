@@ -127,12 +127,17 @@ function SimulateAndTranslate(){
                 },
             }})
         );
-    }, [allData]);
+    }, [allData, dati]);
 
-    useEffect(()=>{
-        if(input && dati)
-            setAllData(true)
-    },[input, dati])
+    useEffect(() => {
+        if (!input || !dati) {
+            setAllData(false);
+            return;
+        }
+
+        setInputArr(input);
+        setAllData(true);
+    }, [input, dati]);
 
     useEffect(()=>{
         if(!allData) return;
@@ -191,7 +196,7 @@ function SimulateAndTranslate(){
             const chiave = creaChiaveConfigurazione(
                 activeState,
                 charToRead.current,
-                inputArr
+                tape
             );
 
             if (configurazioniVisitate.current.has(chiave)) {

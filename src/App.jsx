@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom'
 
 function App() {
   const [dati, setDati] = useState(null);
-  const [input, setInput] = useState(null);
+  const [input, setInput] = useState('');
   var alphEnc = {};
   var statesEnc = {}
 

@@ -9,6 +9,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
     const div = document.getElementById("write_here");
     const par = document.getElementById("write_here_trad");
     var n_passi = 0;
+    const configurazioniVisitate = new Set();
     var curr = dati.machine.initial_state;
     var inputArray = input.split('');
     var i = 0;
@@ -49,6 +50,20 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
         )
 
         n_passi++;
+
+        const chiave = JSON.stringify({
+            stato: curr,
+            posizione: i,
+            nastro: plchldFakeArray
+        });
+
+        if (configurazioniVisitate.has(chiave)) {
+            div.innerHTML += ' Infinite loop detected.';
+            par.innerHTML += '</br>Infinite loop detected.';
+            break ciclo;
+        }
+
+        configurazioniVisitate.add(chiave);
 
         if(pre_write !== '') plchldFakeArray[i-1] = pre_write
         let fakeArray = [...plchldFakeArray];

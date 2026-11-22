@@ -46,6 +46,10 @@ function Home(){
         4: {
             path: 'NotValid.json',
             name: 'Invalid JSON - Incorrect structure.'
+        },
+        5: {
+            path: 'infiniteExecution.json',
+            name: 'Valid JSON - Loop detected.'
         }
     }
 
