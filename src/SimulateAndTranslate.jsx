@@ -398,7 +398,7 @@ function SimulateAndTranslate(){
                         <div id='write_here_sim' ref={containerTranslate} className='contIngrandimento p-3' style={{ flex: `0 0 ${altezzaSim}%` }}></div>
                     </div>
                 </div>
-                <div id='write_here' className={`vh-10 ${isDesktop ? 'fs-5' : ''}`} style = {isDesktop ? {} : {fontSize: '0.75rem'}}>
+                <div id='write_here' className={`overflow-auto p-1 ${isDesktop ? 'fs-5' : ''}`} style = {isDesktop ? {height: '10vh'} : {fontSize: '0.75rem', height: '10vh'}}>
                 </div>
             </div>
         </>
