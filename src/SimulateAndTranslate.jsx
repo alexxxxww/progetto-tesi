@@ -29,7 +29,7 @@ function SimulateAndTranslate(){
     const [cell, setCell] = useState(1)
     const [overflow, setOverflow] = useState()
     const [conf, setConf] = useState(1);
-    const [tape, setTape] = useState( ['...', `&#9633;`, ...(input ?? '').split(''), `&#9633;`, '...'])
+    const [tape, setTape] = useState( ['...', `□`, ...(input ?? '').split(''), `□`, '...'])
     const [allData, setAllData] = useState(false)
     const [inputArr, setInputArr] = useState(input)
 
@@ -203,7 +203,7 @@ function SimulateAndTranslate(){
                 setInputArr(input)
                 setGo(false)
                 charToRead.current = 2;
-                setTape(['...', '&#9633;', ...input.split(''), '&#9633;', '...'])
+                setTape(['...', '□', ...input.split(''), '□', '...'])
                 setCell(1)
                 setActiveRead(input[0] || '');
                 setActiveState(dati.machine?.initial_state || '');
@@ -220,7 +220,7 @@ function SimulateAndTranslate(){
                 setInputArr(input)
                 setGo(false)
                 charToRead.current = 2;
-                setTape(['...', '&#9633;', ...input.split(''), '&#9633;', '...'])
+                setTape(['...', '□', ...input.split(''), '□', '...'])
                 setCell(1)
                 setActiveRead(input[0] || '');
                 setActiveState(dati.machine?.initial_state || '');
@@ -288,7 +288,7 @@ function SimulateAndTranslate(){
                 setInputArr(input)
                 setGo(false)
                 charToRead.current = 2;
-                setTape(['...', '&#9633;', ...input.split(''), '&#9633;', '...'])
+                setTape(['...', '□', ...input.split(''), '□', '...'])
                 setCell(1)
                 setActiveRead(input[0] || '');
                 setActiveState(dati.machine?.initial_state || '');
