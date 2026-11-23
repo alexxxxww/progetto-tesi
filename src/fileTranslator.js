@@ -8,10 +8,24 @@ export function translator(dati, input, alphEnc, statesEnc){
         return;
     }    
 
+    const BLANK = '□';
+
+    const normalizeSymbol = (symbol) => {
+        return symbol === '&#9633;' || symbol === '□'
+            ? BLANK
+            : symbol;
+    };
+
     par.innerHTML = `<strong>ENCODING IN LAMBDA CALCULUS</strong></br>`;
 
     //codifica alfabeto
-    const alphabet = [...dati.machine.alphabet, `&#9633;`, `&#949;`];//array
+    const alphabet = [
+        ...new Set([
+            ...dati.machine.alphabet.map(normalizeSymbol),
+            BLANK,
+            '&#949;'
+        ])
+    ];
 
     par.innerHTML += `<br/>Encoding of the alphabet:</br>`;
     alphabet.forEach(symbol => {

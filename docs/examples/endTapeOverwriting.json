@@ -1,0 +1,45 @@
+{
+    "machine": {
+        "alphabet": [
+            "a",
+            "b"
+        ],
+        "set_of_states": [
+            "q_0",
+            "q_1",
+            "q_2"
+        ],
+        "initial_state": "q_0",
+        "final_state": "q_2"
+    },
+    "transitions": [
+        {
+            "current_state": "q_0",
+            "read": "a",
+            "write": "a",
+            "direction": "R",
+            "next_state": "q_0"
+        },
+        {
+            "current_state": "q_0",
+            "read": "b",
+            "write": "b",
+            "direction": "R",
+            "next_state": "q_0"
+        },
+        {
+            "current_state": "q_0",
+            "read": "□",
+            "write": "a",
+            "direction": "R",
+            "next_state": "q_1"
+        },
+        {
+            "current_state": "q_1",
+            "read": "□",
+            "write": "□",
+            "direction": "R",
+            "next_state": "q_2"
+        }
+    ]
+}

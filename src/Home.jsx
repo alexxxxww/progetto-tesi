@@ -50,6 +50,10 @@ function Home(){
         5: {
             path: 'infiniteExecution.json',
             name: 'Valid JSON - Loop detected.'
+        },
+        6: {
+            path: 'endTapeOverwriting.json',
+            name: 'Valid JSON - Overwrite the end of the tape.'
         }
     }
 

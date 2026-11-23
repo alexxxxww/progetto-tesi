@@ -29,7 +29,7 @@ function SimulateAndTranslate(){
     const [cell, setCell] = useState(1)
     const [overflow, setOverflow] = useState()
     const [conf, setConf] = useState(1);
-    const [tape, setTape] = useState( ['...', `□`, ...(input ?? '').split(''), `□`, '...'])
+    const [tape, setTape] = useState([])
     const [allData, setAllData] = useState(false)
     const [inputArr, setInputArr] = useState(input)
 
@@ -93,6 +93,10 @@ function SimulateAndTranslate(){
                 window.removeEventListener('pointerup', terminaRidimensionamento);
             };
     }, [ridimensionamento]);
+
+    useEffect(() => {
+        setTape(['...', '□', ...(inputArr ?? '').split(''), '□', '...']);
+    }, [input]);
 
     useEffect(() => {
         if (!allData || !dati) return;
@@ -176,8 +180,8 @@ function SimulateAndTranslate(){
         if(conf === 1){
             const firstTrans = {
                 current_state: dati.machine.initial_state,
-                read: blank,
-                write: blank,
+                read: `□`,
+                write: `□`,
                 direction: 'R',
                 next_state: dati.machine.initial_state 
             }
@@ -238,11 +242,15 @@ function SimulateAndTranslate(){
                 return;
             }
 
-            setTape(prev => {
+            /*setTape(prev => {
                 const newTape = [...prev];
                 newTape[cell] = trans.write;
                 return newTape;
-            });
+            });*/
+
+            const newTape = [...tape];
+
+            newTape[cell] = trans.write;
 
             setInputArr(prev => {
                 const newInp = prev.split('');
@@ -250,18 +258,31 @@ function SimulateAndTranslate(){
                 return newInp.join('');
             });
 
-            if(trans?.direction == 'R'){
-                setCell(prev => prev + 1);
-                charToRead.current++;
-            }
-            else if(trans?.direction == 'L'){
-                setCell(prev => prev - 1)
-                charToRead.current--;
+            let nextCell = charToRead.current;
+
+            if (trans.direction === 'R') {
+                nextCell++;
+            } else if (trans.direction === 'L') {
+                nextCell--;
             }
 
+            if (nextCell === newTape.length - 1) {
+                newTape.splice(newTape.length - 1, 0, '□');
+            }
+
+            if (nextCell === 0) {
+                newTape.splice(1, 0, '□');
+                nextCell = 1;
+            }
+
+            setTape(newTape);
+            setCell(nextCell);
+            charToRead.current = nextCell;
+
             const nextTrans = dati.transitions.find(
-                (nextTrans) => nextTrans.current_state === trans.next_state && 
-                nextTrans.read === tape[charToRead.current]
+                (nextTrans) =>
+                    nextTrans.current_state === trans.next_state &&
+                    nextTrans.read === newTape[nextCell]
             );
 
             if(conf === 1) {
@@ -272,14 +293,14 @@ function SimulateAndTranslate(){
 
             if (nextTrans) {
                 setConf(prev => prev + 1)
-                setActiveRead(tape[charToRead.current]);
+                setActiveRead(newTape[charToRead.current]);
                 setActiveState(nextTrans.current_state);
             } else {
                 if(acceptedString){
                     const lastTrans = {
                         current_state: trans.next_state,
-                        read: blank,
-                        write: blank,
+                        read: `□`,
+                        write: `□`,
                         direction: trans.direction,
                         next_state: trans.next_state 
                     }
