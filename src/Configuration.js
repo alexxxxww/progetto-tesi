@@ -1,5 +1,6 @@
 import { translateString } from "./fileTranslator";
 import Tooltip from 'bootstrap/js/dist/tooltip';
+import normalizeSymbol from './normalizeSymbol'
 
 var numOfConf;
 var confEncArray = [];
@@ -30,7 +31,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
     let epsilon = `ε`
     par.innerHTML += `<span style = 'border-top: 1px solid black'>C<sub>${numOfConf}</sub></span> =`
     let init = `<span style='text-decoration:overline; display:inline'>("${epsilon}", "${blank}", "${fakeArray.slice(1).join('')}","${curr}")</span>`
-    let initEnc = `&#955;x.(x(${alphEnc[`&#949;`]}) (${alphEnc[blank]}) (`;
+    let initEnc = `&#955;x.(x(${alphEnc[`&#949;`]}) (${alphEnc[normalizeSymbol(blank)]}) (`;
     par.innerHTML += `${init + ' = ' + initEnc}`
     translateString(fakeArray.slice(1).join(''), par)
     par.innerHTML += `) (${statesEnc[curr]}))`
@@ -103,7 +104,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
             par.innerHTML += cod;
             encConf += cod
         }else if(beforeHead.length == 1){
-            let cod = `(${alphEnc[beforeHead]}`
+            let cod = `(${alphEnc[normalizeSymbol(beforeHead)]}`
             par.innerHTML += cod;
             encConf += cod
         }else if(beforeHead.length > 1){
@@ -111,7 +112,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
             encConf += translateString(beforeHead.split('').reverse().join(''), par, false)
         }
             
-        let codEx = `) (${alphEnc[head]}`
+        let codEx = `) (${alphEnc[normalizeSymbol(head)]}`
         par.innerHTML += codEx;
         encConf += codEx
 
@@ -120,7 +121,7 @@ export function generateConfigurationsTree(dati, input, alphEnc, statesEnc, setA
             par.innerHTML += cod
             encConf += cod
         } else if(afterHead.length == 1){
-            let cod = `) (${alphEnc[afterHead]}`
+            let cod = `) (${alphEnc[normalizeSymbol(afterHead)]}`
             par.innerHTML += cod
             encConf += cod
         } else if(afterHead.length > 1){
@@ -364,7 +365,7 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
                 = (${lambda}z.<i><b>trans</b></i>z)k${overline}(ε, ${blank}, ${overline}(${h}${r})${closeOv}, q_${l})${closeOv}`
         } else { 
             translation += `= ${overline}${a_p}${closeOv} ${overline}${pRev}${closeOv}${Nrplc.split('u.u')[1]}k${r}</br>
-                = (${alphEnc[a_p]}${overline}${pRev}${closeOv})${Nrplc.split('u.u')[1]}k${r}</br>
+                = (${alphEnc[normalizeSymbol(a_p)]}${overline}${pRev}${closeOv})${Nrplc.split('u.u')[1]}k${r}</br>
                 →<sub>det</sub>(<span data-bs-toggle="tooltip" data-bs-html="true" title = "U<sub>i</sub> := P<sub>i</sub>{x ← ${lambda}z.<i><b>trans</b></i>z}">${info}</span>)  ${P_abb.replace('P', 'U')}${overline}${pRev}${closeOv}k${r}</br>
                 = (${plhold})${overline}${pRev}${closeOv}k${r}</br>
                 →<sub>det</sub> ${plhold.split(`${lambda}k.`)[1].replace('u,', `${overline}${pRev}${closeOv}, `)}${r}</br>
@@ -413,7 +414,7 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
                 →<sub>det</sub>${plhold.split(`w.`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `).replace('w', `${overline}(${a}${s})${closeOv}`).split(`&gt;)`)}&gt;</br>`
         } else { 
             translation += `= ${overline}${r.split('>')[1][0]}${closeOv} ${overline}${rplcU}${closeOv}${N.replaceAll('R','V').split('v.v')[1].split('k')[0]}k${s}</br>
-                = (${alphEnc[a_p]}${overline}${rplcU}${closeOv})${N.replaceAll('R','V').split('v.v')[1].split('k')[0]}k${s}</br>
+                = (${alphEnc[normalizeSymbol(a_p)]}${overline}${rplcU}${closeOv})${N.replaceAll('R','V').split('v.v')[1].split('k')[0]}k${s}</br>
                 →<sub>det</sub>(<span data-bs-toggle="tooltip" data-bs-html="true" title = "V<sub>i</sub> := R<sub>i</sub>{x ← ${lambda}z.<i><b>trans</b></i>z}">${info}</span>)${R_abb.replace('R', 'V')}${overline}${rplcU}${closeOv}k${s}</br>
                 = ${plhold}${overline}${rplcU}${closeOv}k${s}</br>
                 →<sub>det</sub>${plhold.split(`${lambda}k.`)[1].replace('u,', `${overline}${rplcU}${closeOv}, `)}${s}</br>

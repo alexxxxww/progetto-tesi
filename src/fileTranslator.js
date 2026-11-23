@@ -1,3 +1,5 @@
+import normalizeSymbol from './normalizeSymbol'
+
 var lambda_alp;
 var lambda;
 
@@ -9,12 +11,6 @@ export function translator(dati, input, alphEnc, statesEnc){
     }    
 
     const BLANK = '□';
-
-    const normalizeSymbol = (symbol) => {
-        return symbol === '&#9633;' || symbol === '□'
-            ? BLANK
-            : symbol;
-    };
 
     par.innerHTML = `<strong>ENCODING IN LAMBDA CALCULUS</strong></br>`;
 
@@ -28,13 +24,16 @@ export function translator(dati, input, alphEnc, statesEnc){
     ];
 
     par.innerHTML += `<br/>Encoding of the alphabet:</br>`;
-    alphabet.forEach(symbol => {
-        lambda_alp = alphabet
+
+    lambda_alp = alphabet
             .map(s => `&#955;x<sub>${s}</sub>`)
-            .join("")//unisce gli elementi in una stringa
-        
-        alphEnc[symbol] = `${lambda_alp}.x<sub>${symbol}</sub>`
-        par.innerHTML += `<div style='text-decoration:overline; display:inline'>${symbol}</div>: ${alphEnc[symbol]}<br>`
+            .join("")//unisce gli elementi in una stringa 
+
+    alphabet.forEach(symbol => {
+        const normalized = normalizeSymbol(symbol);
+
+        alphEnc[normalized] = `${lambda_alp}.x<sub>${normalized}</sub>`
+        par.innerHTML += `<div style='text-decoration:overline; display:inline'>${normalized}</div>: ${alphEnc[normalized]}<br>`
     });
 
     const states_alphabet = dati.machine.set_of_states;
