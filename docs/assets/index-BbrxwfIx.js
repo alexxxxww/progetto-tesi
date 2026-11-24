@@ -42,16 +42,16 @@ Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}
         →<sub>det</sub>(<span data-bs-toggle="tooltip" data-bs-html="true" title = "T<sub>i</sub><sup>j</sup> := N<sub>i</sub><sup>j</sup>{x ← ${l}z.<i><b>trans</b></i>z}">${g}</span>) T<sup>${j[1]}</sup><sub>${e.current_state.split(`_`)[1]}</sub>${F} k ${R}</br>`,n.machine.final_state===e.current_state){u=`${l}u.${l}k.${l}v.k&lt;u,${E}${e.read}${D}, v, ${E}${e.current_state}${D}&gt;`,B+=`=${u}${F} k ${R}</br>
             →k&lt;${P.join(` `)}&gt;</br>
             =k${T.index}</br>
-            =<span style='color: var(--orange)'>k</span>${O}</br></br>`;let t=[j[0],j[1],j[2]].map(e=>e===`ε`?``:e).join(``).replaceAll(`&#9633;`,`□`).replace(/^□+|□+$/g,``);B+=`CONVENZIONE: ${E}C<sub>fin</sub>${D} := (${p}, ${f}, ${t}, ${n.machine.final_state})</br>`,B+=`<span style='color: var(--orange)'>(${l}x.<i><b>final</b></i>(${l}w.w)x)</span> ${E}C<sub>fin</sub>${D}</br>
+            =<span style='color: var(--orange)'>k</span>${O}</br></br>`;let t=[j[0],j[1]===`&#9633;`||j[1]===`□`?``:j[1],j[2]===`&#9633;`||j[2]===`□`?``:j[2]].map(e=>e===`ε`?``:e).join(``),r=[j[0],j[1],j[2]].map(e=>e===`ε`?``:e).join(``).replaceAll(`&#9633;`,`□`).replace(/^□+|□+$/g,``);B+=`CONVENZIONE: ${E}C<sub>fin</sub>${D} := (${p}, ${f}, ${t}, ${n.machine.final_state})</br>`,B+=`<span style='color: var(--orange)'>(${l}x.<i><b>final</b></i>(${l}w.w)x)</span> ${E}C<sub>fin</sub>${D}</br>
         = (${l}k.${l}y.y(${l}v.${l}a.${l}s.${l}q.<i><b>flat</b></i><sub>${h}<sub>${f}</sub></sub>ks))k${E}C<sub>fin</sub>${D}</br>
         →<sub>det</sub> ${E}C<sub>fin</sub>${D}(${l}v.${l}a.${l}s.${l}q.<i><b>flat</b></i><sub>${h}<sub>${f}</sub></sub>ks)</br>
         = ${E}(${p}, ${f}, ${t}, ${n.machine.final_state})${D}(${l}v.${l}a.${l}s.${l}q.<i><b>flat</b></i><sub>${h}<sub>${f}</sub></sub>ks)</br>
         = (${l}x.x${E}${p}${D} ${E}${f}${D} ${E}${t}${D} ${E}${n.machine.final_state}${D})(${l}v.${l}a.${l}s.${l}q.<i><b>flat</b></i><sub>${h}<sub>${f}</sub></sub>ks)</br>
         →<sub>det</sub> (${l}v.${l}a.${l}s.${l}q.<i><b>flat</b></i><sub>${h}<sub>${f}</sub></sub>ks)${E}${p}${D} ${E}${f}${D} ${E}${t}${D} ${E}${n.machine.final_state}${D}</br>
         →<sub>det</sub> <i><b>flat</b></i><sub>${h}<sub>${f}</sub></sub>k${E}${t}${D}</br>
-        →<sub>det</sub> <span style='color: var(--orange)'>k</span>${E}${t}${D}</br>
-        = <span style='color: var(--orange)'>(${l}w.w)</span>${E}${t}${D}</br>
-        →<sub>det</sub> ${E}${t}${D}`}else if(e.direction===`-`){u=`${l}u.${l}k.${l}v.xk&lt;u,${E}${e.write}${D}, v, ${E}${e.next_state}${D}&gt;`;let t=u.replaceAll(`x`,`{${l}z.<i><b>trans</b></i>z}`);B+=`= (${t})${F}k${R}</br>
+        →<sub>det</sub> <span style='color: var(--orange)'>k</span>${E}${r}${D}</br>
+        = <span style='color: var(--orange)'>(${l}w.w)</span>${E}${r}${D}</br>
+        →<sub>det</sub> ${E}${r}${D}`}else if(e.direction===`-`){u=`${l}u.${l}k.${l}v.xk&lt;u,${E}${e.write}${D}, v, ${E}${e.next_state}${D}&gt;`;let t=u.replaceAll(`x`,`{${l}z.<i><b>trans</b></i>z}`);B+=`= (${t})${F}k${R}</br>
             →<sub>det</sub> ${t.split(`v.`)[1].replace(`u,`,`${F},`).replace(`v,`,`${R},`).split(`&gt;)`)}</br>
             = <i><b>trans</b></i>k${E}(${I}, ${L}, ${R}, q_${S})${D}</br>
             = <i><b>trans</b></i>k${E}C<sub>${o+1}</sub>${D}</br>`}else if(e.direction===`L`){u=`${l}u.u`;for(let e=0;e<_;e++)d[e]===f?u+=`P<sup>${S}, ${C}</sup>`:u+=`P<sup>${S}, ${C}</sup><sub>${d[e]}</sub>`;let t=j[0].split(``).reverse().join(``),n=`${E}${t}${D}`,i=``,a=t.split(``)[0],s=t.split(``).slice(1).length>0?t.split(``).slice(1):p;F===f?(b=`${l}k.<i><b>append</b></i> <sup>${C}</sup>(${l}w.xk&lt;${E}${p}${D}, ${E}${F}${D}, w, ${E}${e.next_state}${D}&gt;)`,i=`P<sup>${S}, ${C}</sup>`):(b=`${l}u.${l}k.<i><b>append</b></i> <sup>${C}</sup>(${l}w.xk&lt;u, ${E}${F}${D}, w, ${E}${e.next_state}${D}&gt;)`,i=`P<sup>${S}, ${C}</sup><sub>${a}</sub>`);let c=u.replaceAll(`P`,`U`),m=b.replace(`x`,`(${l}z.<i><b>trans</b></i>z)`);B+=`= (${u}{x ← ${l}z.<i><b>trans</b></i>z})${n}k${R}</br>

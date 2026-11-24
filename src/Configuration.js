@@ -296,6 +296,13 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
             =k${confTrans.index}</br>
             =<span style='color: var(--orange)'>k</span>${C}</br></br>`
 
+        const finalStringPreFlat = [
+            values[0],
+            values[1] === '&#9633;' || values[1] === '□' ? '' : values[1],
+            values[2] === '&#9633;' || values[2] === '□' ? '' : values[2],
+        ]
+            .map(s => s === 'ε' ? '' : s)
+            .join('')
 
         const finalString = [
             values[0],
@@ -306,14 +313,14 @@ export function generateTranslation(trans, nextTrans, dati, alphEnc, numOfStates
             .join('')
             .replaceAll('&#9633;', '□')
             .replace(/^□+|□+$/g, '');
-        translation += `CONVENZIONE: ${overline}C<sub>fin</sub>${closeOv} := (${epsilon}, ${blank}, ${finalString}, ${dati.machine.final_state})</br>`
+        translation += `CONVENZIONE: ${overline}C<sub>fin</sub>${closeOv} := (${epsilon}, ${blank}, ${finalStringPreFlat}, ${dati.machine.final_state})</br>`
         translation += `<span style='color: var(--orange)'>(${lambda}x.<i><b>final</b></i>(${lambda}w.w)x)</span> ${overline}C<sub>fin</sub>${closeOv}</br>
         = (${lambda}k.${lambda}y.y(${lambda}v.${lambda}a.${lambda}s.${lambda}q.<i><b>flat</b></i><sub>${sigma}<sub>${blank}</sub></sub>ks))k${overline}C<sub>fin</sub>${closeOv}</br>
         →<sub>det</sub> ${overline}C<sub>fin</sub>${closeOv}(${lambda}v.${lambda}a.${lambda}s.${lambda}q.<i><b>flat</b></i><sub>${sigma}<sub>${blank}</sub></sub>ks)</br>
-        = ${overline}(${epsilon}, ${blank}, ${finalString}, ${dati.machine.final_state})${closeOv}(${lambda}v.${lambda}a.${lambda}s.${lambda}q.<i><b>flat</b></i><sub>${sigma}<sub>${blank}</sub></sub>ks)</br>
-        = (${lambda}x.x${overline}${epsilon}${closeOv} ${overline}${blank}${closeOv} ${overline}${finalString}${closeOv} ${overline}${dati.machine.final_state}${closeOv})(${lambda}v.${lambda}a.${lambda}s.${lambda}q.<i><b>flat</b></i><sub>${sigma}<sub>${blank}</sub></sub>ks)</br>
-        →<sub>det</sub> (${lambda}v.${lambda}a.${lambda}s.${lambda}q.<i><b>flat</b></i><sub>${sigma}<sub>${blank}</sub></sub>ks)${overline}${epsilon}${closeOv} ${overline}${blank}${closeOv} ${overline}${finalString}${closeOv} ${overline}${dati.machine.final_state}${closeOv}</br>
-        →<sub>det</sub> <i><b>flat</b></i><sub>${sigma}<sub>${blank}</sub></sub>k${overline}${finalString}${closeOv}</br>
+        = ${overline}(${epsilon}, ${blank}, ${finalStringPreFlat}, ${dati.machine.final_state})${closeOv}(${lambda}v.${lambda}a.${lambda}s.${lambda}q.<i><b>flat</b></i><sub>${sigma}<sub>${blank}</sub></sub>ks)</br>
+        = (${lambda}x.x${overline}${epsilon}${closeOv} ${overline}${blank}${closeOv} ${overline}${finalStringPreFlat}${closeOv} ${overline}${dati.machine.final_state}${closeOv})(${lambda}v.${lambda}a.${lambda}s.${lambda}q.<i><b>flat</b></i><sub>${sigma}<sub>${blank}</sub></sub>ks)</br>
+        →<sub>det</sub> (${lambda}v.${lambda}a.${lambda}s.${lambda}q.<i><b>flat</b></i><sub>${sigma}<sub>${blank}</sub></sub>ks)${overline}${epsilon}${closeOv} ${overline}${blank}${closeOv} ${overline}${finalStringPreFlat}${closeOv} ${overline}${dati.machine.final_state}${closeOv}</br>
+        →<sub>det</sub> <i><b>flat</b></i><sub>${sigma}<sub>${blank}</sub></sub>k${overline}${finalStringPreFlat}${closeOv}</br>
         →<sub>det</sub> <span style='color: var(--orange)'>k</span>${overline}${finalString}${closeOv}</br>
         = <span style='color: var(--orange)'>(${lambda}w.w)</span>${overline}${finalString}${closeOv}</br>
         →<sub>det</sub> ${overline}${finalString}${closeOv}`
